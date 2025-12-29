@@ -2,322 +2,253 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Contact Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1256/1256650.png">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<link rel="manifest" href="data:application/json,{
-&quot;name&quot;:&quot;Contact Hub&quot;,
-&quot;short_name&quot;:&quot;Contacts&quot;,
-&quot;start_url&quot;:&quot;.&quot;,
-&quot;display&quot;:&quot;standalone&quot;,
-&quot;background_color&quot;:&quot;#6200ea&quot;,
-&quot;theme_color&quot;:&quot;#6200ea&quot;
-}">
+<title>Contact Hub - Full Project</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-:root{
---bg:#f2f2f2;
---card:#ffffff;
---text:#000;
---primary:#6200ea;
-}
-.dark{
---bg:#121212;
---card:#1e1e1e;
---text:#fff;
-}
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-font-family:Segoe UI,Roboto;
-background:var(--bg);
-color:var(--text);
-height:100vh;
-overflow:hidden;
-}
+font-family:Segoe UI,sans-serif;
+background:linear-gradient(135deg,#b60e6d,#764ba2);
+min-height:100vh;color:#333}
 
-/* SPLASH */
+/* Splash */
 #splash{
-position:fixed;
-inset:0;
-background:linear-gradient(135deg,#6200ea,#3700b3);
-color:white;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-z-index:1000;
-animation:hideSplash 3s forwards;
-}
-@keyframes hideSplash{
-80%{opacity:1}
-100%{opacity:0;visibility:hidden}
-}
-
-/* APP BAR */
-.appbar{
-height:56px;
-background:var(--primary);
-color:white;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 16px;
+position:fixed;inset:0;
+background:#0f0f2d;
+display:flex;flex-direction:column;
+align-items:center;justify-content:center;
+color:white;z-index:999}
+.title{font-size:4rem;color:#4ecdc4;
+text-shadow:0 0 30px #4ecdc4}
+.enter-btn{
+margin-top:2rem;
+padding:15px 40px;
+border:none;border-radius:40px;
 font-size:1.2rem;
-}
+background:linear-gradient(45deg,#ff6b6b,#4ecdc4);
+color:white;cursor:pointer}
 
-/* CONTENT */
-.content{
-position:absolute;
-top:56px;
-bottom:70px;
-width:100%;
-overflow-y:auto;
-padding:12px;
-}
-
-/* CARD */
-.card{
-background:var(--card);
-border-radius:16px;
-padding:15px;
-margin-bottom:12px;
-box-shadow:0 3px 8px rgba(0,0,0,.2);
-}
-
-/* ACTIONS */
-.actions{
-display:flex;
-justify-content:space-around;
-margin-top:10px;
-}
-.actions button{
-border:none;
-background:#eee;
-padding:10px;
-border-radius:50%;
-font-size:1.2rem;
-}
-
-/* FAB */
-.fab{
-position:fixed;
-bottom:90px;
-right:20px;
-width:56px;
-height:56px;
-background:#03dac5;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:1.8rem;
-box-shadow:0 5px 12px rgba(0,0,0,.4);
-cursor:pointer;
-}
-
-/* BOTTOM NAV */
-.bottom-nav{
-position:fixed;
-bottom:0;
-height:70px;
-width:100%;
-background:var(--card);
-display:flex;
-border-top:1px solid #aaa;
-}
-.nav-item{
-flex:1;
-text-align:center;
-padding-top:8px;
-font-size:.75rem;
-color:#666;
-cursor:pointer;
-}
-.nav-item i{
-display:block;
-font-size:1.4rem;
-}
-.nav-item.active{
-color:var(--primary);
-}
-
-/* MODAL */
-#modal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.6);
-display:none;
-align-items:center;
-justify-content:center;
-}
-.modal{
-background:var(--card);
-padding:20px;
+/* Login */
+#login-page{display:none;min-height:100vh;
+align-items:center;justify-content:center}
+.login-card{
+background:white;padding:2rem;
 border-radius:20px;
-width:90%;
-}
-.modal input{
-width:100%;
-padding:12px;
-margin:8px 0;
-border-radius:10px;
-border:1px solid #ccc;
-}
-.modal button{
-width:100%;
-padding:12px;
-border:none;
-background:var(--primary);
-color:white;
-border-radius:10px;
-font-size:1rem;
-}
+width:350px;text-align:center}
+input,select,textarea{
+width:100%;padding:12px;margin:10px 0;
+border-radius:10px;border:1px solid #ccc}
+.login-btn{
+background:#667eea;color:white;
+border:none;padding:12px;
+border-radius:10px;cursor:pointer}
+
+/* App */
+#app{display:none}
+.header{
+background:white;padding:1rem;
+display:flex;gap:1rem;flex-wrap:wrap}
+.tab-btn{
+padding:10px 20px;border:none;
+border-radius:20px;
+cursor:pointer}
+.tab-btn.active{background:#667eea;color:white}
+.controls{margin-left:auto;display:flex;gap:.5rem}
+.app-page{display:none;padding:1.5rem}
+.app-page.active{display:block}
+
+/* Cards */
+.contacts-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+gap:1rem}
+.contact-card{
+background:white;
+padding:1rem;border-radius:20px;
+position:relative}
+.fav-btn{
+position:absolute;top:10px;right:10px;
+border:none;background:none;font-size:1.5rem}
+.group-tag{
+background:#667eea;color:white;
+display:inline-block;
+padding:4px 10px;
+border-radius:20px;font-size:.8rem}
+.action-btn{
+border:none;border-radius:50%;
+width:40px;height:40px;
+cursor:pointer;color:white}
+.call-btn{background:#4ecdc4}
+.msg-btn{background:#f9ca24}
+.edit-btn{background:#667eea}
+.delete-btn{background:#ff6b6b}
+
+/* Modal */
+#modal{
+display:none;position:fixed;inset:0;
+background:rgba(0,0,0,.7);
+justify-content:center;align-items:center}
+.modal-content{
+background:white;padding:2rem;
+border-radius:20px;width:400px}
+.close{float:right;font-size:1.5rem;cursor:pointer}
 </style>
 </head>
 
 <body>
 
-<!-- SPLASH -->
+<!-- Splash -->
 <div id="splash">
-<h1>📇 Contact Hub</h1>
-<p>Smart Contact Manager</p>
+<div class="title">Contact Hub</div>
+<p>Your Smart Contact Manager</p>
+<button class="enter-btn" onclick="enterApp()">Enter</button>
 </div>
 
-<!-- APP BAR -->
-<div class="appbar">
-<span>Contact Hub</span>
-<div>
-<span onclick="voiceSearch()" style="cursor:pointer;margin-right:10px">🎙️</span>
-<span onclick="toggleDark()" style="cursor:pointer">🌙</span>
-</div>
-</div>
-
-<!-- CONTENT -->
-<div class="content" id="content"></div>
-
-<!-- FAB -->
-<div class="fab" onclick="openModal()">+</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-<div class="nav-item active" onclick="showContacts(this)">
-<i class="fa fa-address-book"></i>Contacts
-</div>
-<div class="nav-item" onclick="showCalls(this)">
-<i class="fa fa-phone"></i>Calls
-</div>
-<div class="nav-item" onclick="toggleDark()">
-<i class="fa fa-moon"></i>Theme
+<!-- Login -->
+<div id="login-page">
+<div class="login-card">
+<h2>Login</h2>
+<input value="admin">
+<input type="password" value="123">
+<button class="login-btn" onclick="login()">Login</button>
 </div>
 </div>
 
-<!-- MODAL -->
+<!-- App -->
+<div id="app">
+<div class="header">
+<button class="tab-btn active" onclick="showPage('all')">All</button>
+<button class="tab-btn" onclick="showPage('fav')">Favorites</button>
+<button class="tab-btn" onclick="showPage('groups')">Groups</button>
+<button class="tab-btn" onclick="showPage('history')">Call History</button>
+
+<div class="controls">
+<input id="search" placeholder="Search..." oninput="searchContacts()">
+<button onclick="openModal()">+ Add</button>
+</div>
+</div>
+
+<div id="page-all" class="app-page active">
+<div class="contacts-grid" id="all-grid"></div>
+</div>
+
+<div id="page-fav" class="app-page">
+<div class="contacts-grid" id="fav-grid"></div>
+</div>
+
+<div id="page-groups" class="app-page">
+<div class="contacts-grid" id="group-grid"></div>
+</div>
+
+<div id="page-history" class="app-page">
+<div class="contacts-grid" id="history-grid"></div>
+</div>
+</div>
+
+<!-- Modal -->
 <div id="modal">
-<div class="modal">
-<h3>Add Contact</h3>
-<input id="name" placeholder="Name">
-<input id="phone" placeholder="Phone Number">
-<button onclick="saveContact()">Save</button>
+<div class="modal-content">
+<span class="close" onclick="closeModal()">&times;</span>
+<form onsubmit="saveContact(event)">
+<input id="name" placeholder="Name" required>
+<input id="phone" placeholder="Phone">
+<select id="blood">
+<option value="">Blood Group</option>
+<option>A+</option><option>B+</option><option>O+</option><option>AB+</option>
+<option>A-</option><option>B-</option><option>O-</option><option>AB-</option>
+</select>
+<input id="group" placeholder="Group">
+<button class="login-btn">Save</button>
+</form>
 </div>
 </div>
 
 <script>
-/* DARK MODE */
-function toggleDark(){
-document.body.classList.toggle("dark");
-localStorage.setItem("dark",document.body.classList.contains("dark"));
-}
-if(localStorage.getItem("dark")==="true"){
-document.body.classList.add("dark");
-}
+let contacts=JSON.parse(localStorage.getItem("contacts"))||[];
+let callHistory=JSON.parse(localStorage.getItem("history"))||[];
+let editId=null;
 
-/* DATA */
-let contacts = JSON.parse(localStorage.getItem("contacts")) || [];
-let calls = JSON.parse(localStorage.getItem("calls")) || [];
+/* Navigation */
+function enterApp(){
+splash.style.display="none";
+login-page.style.display="flex"}
+function login(){
+login-page.style.display="none";
+app.style.display="block";
+renderAll()}
+function showPage(p){
+document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+event.target.classList.add("active");
+document.querySelectorAll(".app-page").forEach(p=>p.classList.remove("active"));
+document.getElementById("page-"+p).classList.add("active");
+if(p==="fav")renderFav();
+if(p==="groups")renderGroups();
+if(p==="history")renderHistory();}
 
-/* NAV ACTIVE */
-function setActive(el){
-document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
-el.classList.add("active");
-}
+/* Render */
+function renderAll(list=contacts){
+all-grid.innerHTML=list.map(card).join("")}
+function renderFav(){
+fav-grid.innerHTML=contacts.filter(c=>c.fav).map(card).join("")}
+function renderGroups(){
+let g={};
+contacts.forEach(c=>{g[c.group||"Other"]=g[c.group||"Other"]||[];g[c.group||"Other"].push(c)})
+group-grid.innerHTML=Object.entries(g).map(([k,v])=>`
+<div class="contact-card">
+<b>${k}</b><br>${v.length} contacts
+</div>`).join("")}
+function renderHistory(){
+history-grid.innerHTML=callHistory.map(h=>`
+<div class="contact-card">
+<b>${h.name}</b><br>${h.phone}<br>
+<span class="group-tag">${h.time}</span>
+</div>`).join("")}
 
-/* CONTACTS VIEW */
-function showContacts(el){
-if(el) setActive(el);
-content.innerHTML = contacts.map(c=>`
-<div class="card">
-<h3>${c.name}</h3>
-<p>📞 ${c.phone}</p>
-<div class="actions">
-<button onclick="callNow('${c.phone}')">📞</button>
-<button onclick="sms('${c.phone}')">💬</button>
+/* Card */
+function card(c){
+return`
+<div class="contact-card">
+<button class="fav-btn" onclick="fav(${c.id})">${c.fav?"❤️":"🤍"}</button>
+<b>${c.name}</b><br>${c.phone}<br>
+${c.blood?`<span class="group-tag">🩸${c.blood}</span>`:""}
+<div>
+<button class="action-btn call-btn" onclick="call('${c.phone}','${c.name}')"><i class="fa fa-phone"></i></button>
+<button class="action-btn delete-btn" onclick="del(${c.id})"><i class="fa fa-trash"></i></button>
 </div>
-</div>
-`).join("");
-}
+</div>`}
 
-/* CALL HISTORY VIEW */
-function showCalls(el){
-if(el) setActive(el);
-content.innerHTML = calls.map(c=>`
-<div class="card">
-<h3>📞 ${c.number}</h3>
-<p>🕒 ${c.time}</p>
-</div>
-`).join("");
-}
+/* Actions */
+function fav(id){
+let c=contacts.find(c=>c.id===id);
+c.fav=!c.fav;save()}
+function del(id){
+contacts=contacts.filter(c=>c.id!==id);save()}
+function call(phone,name){
+callHistory.unshift({name,phone,time:new Date().toLocaleString()});
+localStorage.setItem("history",JSON.stringify(callHistory));
+window.open("tel:"+phone)}
+function searchContacts(){
+let q=search.value.toLowerCase();
+renderAll(contacts.filter(c=>c.name.toLowerCase().includes(q)))}
 
-/* ADD CONTACT */
+/* Modal */
 function openModal(){modal.style.display="flex"}
-function saveContact(){
-contacts.push({name:name.value,phone:phone.value});
+function closeModal(){modal.style.display="none"}
+function saveContact(e){
+e.preventDefault();
+contacts.unshift({
+id:Date.now(),
+name:name.value,
+phone:phone.value,
+blood:blood.value,
+group:group.value,
+fav:false});
+save();closeModal()}
+function save(){
 localStorage.setItem("contacts",JSON.stringify(contacts));
-modal.style.display="none";
-showContacts();
-}
-
-/* CALL + HISTORY */
-function callNow(num){
-calls.push({
-number:num,
-time:new Date().toLocaleString()
-});
-localStorage.setItem("calls",JSON.stringify(calls));
-window.open(`tel:${num}`);
-}
-
-/* SMS */
-function sms(num){
-window.open(`sms:${num}`);
-}
-
-/* VOICE SEARCH */
-function voiceSearch(){
-let rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-rec.lang="en-US";
-rec.start();
-rec.onresult = e=>{
-let text = e.results[0][0].transcript.toLowerCase();
-let result = contacts.filter(c=>c.name.toLowerCase().includes(text));
-content.innerHTML = result.map(c=>`
-<div class="card">
-<h3>${c.name}</h3>
-<p>${c.phone}</p>
-</div>
-`).join("");
-};
-}
-
-/* INIT */
-showContacts();
-
-/* SERVICE WORKER */
-if("serviceWorker" in navigator){
-navigator.serviceWorker.register("sw.js");
-}
+renderAll()}
 </script>
 
 </body>
