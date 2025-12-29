@@ -1,139 +1,323 @@
-<!-- ONLY CHANGES ARE COMMENTED AS // NEW -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Contact Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact Hub - Working Demo</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1256/1256650.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="manifest" href="data:application/json,{
+&quot;name&quot;:&quot;Contact Hub&quot;,
+&quot;short_name&quot;:&quot;Contacts&quot;,
+&quot;start_url&quot;:&quot;.&quot;,
+&quot;display&quot;:&quot;standalone&quot;,
+&quot;background_color&quot;:&quot;#6200ea&quot;,
+&quot;theme_color&quot;:&quot;#6200ea&quot;
+}">
 
 <style>
-/* ===== YOUR EXISTING CSS (UNCHANGED) ===== */
-*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+--bg:#f2f2f2;
+--card:#ffffff;
+--text:#000;
+--primary:#6200ea;
+}
+.dark{
+--bg:#121212;
+--card:#1e1e1e;
+--text:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
 body{
-font-family:'Segoe UI',sans-serif;
-background:linear-gradient(135deg,#b60e6d,#764ba2);
-min-height:100vh;color:#333;
+font-family:Segoe UI,Roboto;
+background:var(--bg);
+color:var(--text);
+height:100vh;
+overflow:hidden;
 }
-.emergency-badge{
-background:red;color:white;
-padding:4px 10px;border-radius:15px;
-font-size:0.75rem;margin-top:6px;display:inline-block;
+
+/* SPLASH */
+#splash{
+position:fixed;
+inset:0;
+background:linear-gradient(135deg,#6200ea,#3700b3);
+color:white;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+z-index:1000;
+animation:hideSplash 3s forwards;
 }
-.blood-badge{
-background:#6c5ce7;color:white;
-padding:4px 10px;border-radius:15px;
-font-size:0.75rem;margin-top:6px;display:inline-block;
+@keyframes hideSplash{
+80%{opacity:1}
+100%{opacity:0;visibility:hidden}
 }
-.hidden-badge{
-background:#2d3436;color:white;
-padding:4px 10px;border-radius:15px;
-font-size:0.75rem;margin-top:6px;display:inline-block;
+
+/* APP BAR */
+.appbar{
+height:56px;
+background:var(--primary);
+color:white;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 16px;
+font-size:1.2rem;
+}
+
+/* CONTENT */
+.content{
+position:absolute;
+top:56px;
+bottom:70px;
+width:100%;
+overflow-y:auto;
+padding:12px;
+}
+
+/* CARD */
+.card{
+background:var(--card);
+border-radius:16px;
+padding:15px;
+margin-bottom:12px;
+box-shadow:0 3px 8px rgba(0,0,0,.2);
+}
+
+/* ACTIONS */
+.actions{
+display:flex;
+justify-content:space-around;
+margin-top:10px;
+}
+.actions button{
+border:none;
+background:#eee;
+padding:10px;
+border-radius:50%;
+font-size:1.2rem;
+}
+
+/* FAB */
+.fab{
+position:fixed;
+bottom:90px;
+right:20px;
+width:56px;
+height:56px;
+background:#03dac5;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:1.8rem;
+box-shadow:0 5px 12px rgba(0,0,0,.4);
+cursor:pointer;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+position:fixed;
+bottom:0;
+height:70px;
+width:100%;
+background:var(--card);
+display:flex;
+border-top:1px solid #aaa;
+}
+.nav-item{
+flex:1;
+text-align:center;
+padding-top:8px;
+font-size:.75rem;
+color:#666;
+cursor:pointer;
+}
+.nav-item i{
+display:block;
+font-size:1.4rem;
+}
+.nav-item.active{
+color:var(--primary);
+}
+
+/* MODAL */
+#modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+display:none;
+align-items:center;
+justify-content:center;
+}
+.modal{
+background:var(--card);
+padding:20px;
+border-radius:20px;
+width:90%;
+}
+.modal input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:10px;
+border:1px solid #ccc;
+}
+.modal button{
+width:100%;
+padding:12px;
+border:none;
+background:var(--primary);
+color:white;
+border-radius:10px;
+font-size:1rem;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= MODAL (UPDATED FORM) ================= -->
+<!-- SPLASH -->
+<div id="splash">
+<h1>📇 Contact Hub</h1>
+<p>Smart Contact Manager</p>
+</div>
+
+<!-- APP BAR -->
+<div class="appbar">
+<span>Contact Hub</span>
+<div>
+<span onclick="voiceSearch()" style="cursor:pointer;margin-right:10px">🎙️</span>
+<span onclick="toggleDark()" style="cursor:pointer">🌙</span>
+</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="content"></div>
+
+<!-- FAB -->
+<div class="fab" onclick="openModal()">+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+<div class="nav-item active" onclick="showContacts(this)">
+<i class="fa fa-address-book"></i>Contacts
+</div>
+<div class="nav-item" onclick="showCalls(this)">
+<i class="fa fa-phone"></i>Calls
+</div>
+<div class="nav-item" onclick="toggleDark()">
+<i class="fa fa-moon"></i>Theme
+</div>
+</div>
+
+<!-- MODAL -->
 <div id="modal">
-<div class="modal-content">
-<span class="close" onclick="closeModal()">&times;</span>
-<h2 id="modal-title">Add Contact</h2>
-
-<form id="contact-form">
-
-<input type="text" id="name" placeholder="Name *" required>
-<input type="tel" id="phone" placeholder="Phone *">
-<input type="email" id="email" placeholder="Email">
-<input type="date" id="birthday">
-<input type="text" id="group" placeholder="Group">
-
-<!-- 🔥 NEW BLOOD GROUP -->
-<select id="blood">
-<option value="">Select Blood Group</option>
-<option>A+</option><option>A-</option>
-<option>B+</option><option>B-</option>
-<option>O+</option><option>O-</option>
-<option>AB+</option><option>AB-</option>
-</select>
-
-<!-- 🔥 NEW CHECKBOXES -->
-<label><input type="checkbox" id="emergency"> Emergency Contact</label><br>
-<label><input type="checkbox" id="hidden"> Hidden Contact</label>
-
-<textarea id="notes" placeholder="Notes"></textarea>
-
-<button type="submit" class="login-btn">Save Contact</button>
-</form>
+<div class="modal">
+<h3>Add Contact</h3>
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone Number">
+<button onclick="saveContact()">Save</button>
 </div>
 </div>
 
 <script>
-/* ===== YOUR EXISTING JS + NEW FEATURES ===== */
+/* DARK MODE */
+function toggleDark(){
+document.body.classList.toggle("dark");
+localStorage.setItem("dark",document.body.classList.contains("dark"));
+}
+if(localStorage.getItem("dark")==="true"){
+document.body.classList.add("dark");
+}
 
+/* DATA */
 let contacts = JSON.parse(localStorage.getItem("contacts")) || [];
-const PIN = "1234"; // 🔒 hidden contact pin
+let calls = JSON.parse(localStorage.getItem("calls")) || [];
 
-document.getElementById("contact-form").addEventListener("submit", e=>{
-e.preventDefault();
-
-const contact = {
-id: Date.now(),
-name: name.value,
-phone: phone.value,
-email: email.value,
-birthday: birthday.value,
-group: group.value || "Uncategorized",
-notes: notes.value,
-blood: blood.value,              // 🆕
-emergency: emergency.checked,    // 🆕
-hidden: hidden.checked,          // 🆕
-favorite: false
-};
-
-/* 🧠 AI RULE BASED LOGIC */
-if(contact.emergency || contact.group.toLowerCase()=="family"){
-contact.favorite = true;
+/* NAV ACTIVE */
+function setActive(el){
+document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+el.classList.add("active");
 }
 
-contacts.unshift(contact);
-localStorage.setItem("contacts",JSON.stringify(contacts));
-closeModal();
-renderAllContacts();
-});
-
-/* ===== UPDATED CONTACT CARD ===== */
-function createContactHTML(list){
-return list.map(c=>{
-
-if(c.hidden){
-let pin = prompt("Enter PIN to view hidden contact:");
-if(pin!==PIN) return "";
-}
-
-return `
-<div class="contact-card">
-<button class="fav-btn ${c.favorite?"active":""}">❤️</button>
-<div class="contact-name">${c.name}</div>
-<div>${c.phone}</div>
-
-${c.blood?`<div class="blood-badge">🩸 ${c.blood}</div>`:""}
-${c.emergency?`<div class="emergency-badge">🚨 Emergency</div>`:""}
-${c.hidden?`<div class="hidden-badge">🔒 Private</div>`:""}
-
+/* CONTACTS VIEW */
+function showContacts(el){
+if(el) setActive(el);
+content.innerHTML = contacts.map(c=>`
+<div class="card">
+<h3>${c.name}</h3>
+<p>📞 ${c.phone}</p>
+<div class="actions">
+<button onclick="callNow('${c.phone}')">📞</button>
+<button onclick="sms('${c.phone}')">💬</button>
 </div>
-`;
-}).join("");
+</div>
+`).join("");
 }
 
-function renderAllContacts(){
-document.getElementById("contacts-grid-all").innerHTML =
-createContactHTML(contacts);
+/* CALL HISTORY VIEW */
+function showCalls(el){
+if(el) setActive(el);
+content.innerHTML = calls.map(c=>`
+<div class="card">
+<h3>📞 ${c.number}</h3>
+<p>🕒 ${c.time}</p>
+</div>
+`).join("");
 }
 
-/* INITIAL RENDER */
-renderAllContacts();
+/* ADD CONTACT */
+function openModal(){modal.style.display="flex"}
+function saveContact(){
+contacts.push({name:name.value,phone:phone.value});
+localStorage.setItem("contacts",JSON.stringify(contacts));
+modal.style.display="none";
+showContacts();
+}
+
+/* CALL + HISTORY */
+function callNow(num){
+calls.push({
+number:num,
+time:new Date().toLocaleString()
+});
+localStorage.setItem("calls",JSON.stringify(calls));
+window.open(`tel:${num}`);
+}
+
+/* SMS */
+function sms(num){
+window.open(`sms:${num}`);
+}
+
+/* VOICE SEARCH */
+function voiceSearch(){
+let rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+rec.lang="en-US";
+rec.start();
+rec.onresult = e=>{
+let text = e.results[0][0].transcript.toLowerCase();
+let result = contacts.filter(c=>c.name.toLowerCase().includes(text));
+content.innerHTML = result.map(c=>`
+<div class="card">
+<h3>${c.name}</h3>
+<p>${c.phone}</p>
+</div>
+`).join("");
+};
+}
+
+/* INIT */
+showContacts();
+
+/* SERVICE WORKER */
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("sw.js");
+}
 </script>
 
 </body>
