@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+     content="width=device-width,
+     initial-scale=1.0">
+    <title>Contact Hub - Working Demo</title>
+    <link rel="stylesheet"
+     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; 
+            box-sizing: border-box; }
+        body {
+             font-family: 'Segoe UI',
+              sans-serif; 
+              background: 
+              linear-gradient(135deg, #b60e6d 0%, #764ba2 100%); 
+              min-height: 100vh; color: #333 ;}
+        
+        /* Splash */
+        #splash { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #1a1a2e; display: flex;
+             flex-direction: column;
+              justify-content: center; align-items: center; 
+            z-index: 1000; color: white; 
+        }
+        .title { font-size: 4rem; color: #4ecdc4; text-shadow: 0 0 20px #4ecdc4; animation: glow 2s infinite; margin-bottom: 1rem; }
+        @keyframes glow { 0%, 100% { text-shadow: 0 0 20px #4ecdc4; } 50% { text-shadow: 0 0 40px #ff6b6b; } }
+        .enter-btn { background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white; border: none; 
+            padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; margin-top: 2rem; 
+            box-shadow: 0 10px 30px rgba(255,107,107,0.4); transition: all 0.3s ease; 
+            animation: bounce 2s infinite; 
+        }
+        .enter-btn:hover { transform: scale(1.05); box-shadow: 0 15px 40px rgba(255,107,107,0.6); }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+
+        /* Login Page */
+        #login-page { display: none; min-height: 100vh; justify-content: center; align-items: center; padding: 2rem; }
+        .login-card { 
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); padding: 3rem; 
+            border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 400px; 
+            text-align: center; 
+        }
+        .login-card h2 { color: #333; margin-bottom: 2rem; font-size: 2rem; }
+        input { width: 100%; padding: 15px; margin: 1rem 0; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; transition: border 0.3s; }
+        input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .login-btn { 
+            background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; 
+            padding: 15px; width: 100%; border-radius: 10px; font-size: 1.1rem; cursor: pointer; 
+            transition: transform 0.3s; font-weight: 600; 
+        }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102,126,234,0.4); }
+
+        /* Main App */
+        #app { display: none; min-height: 100vh; }
+        .header { 
+            padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; 
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(0,0,0,0.1); 
+        }
+        .nav-tabs { 
+            display: flex; gap: 0; background: rgba(102,126,234,0.2); border-radius: 15px; padding: 5px; margin-right: auto; 
+        }
+        .tab-btn { 
+            background: transparent; border: none; padding: 12px 24px; color: rgba(255,255,255,0.8); 
+            border-radius: 12px; cursor: pointer; font-weight: 500; transition: all 0.3s; 
+            font-size: 0.95rem; display: flex; align-items: center; gap: 8px; 
+        }
+        .tab-btn.active { 
+            background: rgba(255,255,255,0.95); color: #333; box-shadow: 0 5px 20px rgba(0,0,0,0.2); 
+        }
+        .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.3); color: white; }
+        .controls { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        #search { 
+            padding: 10px 20px; border: 2px solid #667eea; border-radius: 25px; background: white; 
+            cursor: pointer; transition: all 0.3s; font-size: 0.9rem; min-width: 200px; 
+        }
+        #voice-btn { 
+            padding: 10px; border: 2px solid #667eea; border-radius: 50%; background: white; 
+            cursor: pointer; transition: all 0.3s; width: 45px; height: 45px; display: flex; 
+            align-items: center; justify-content: center; 
+        }
+        #voice-btn.active { background: #ff6b6b; color: white; border-color: #ff6b6b; }
+        #add-contact, .test-btn, .clear-btn { 
+            background: linear-gradient(45deg, #4ecdc4, #44a08d); color: white; border: none; 
+            padding: 10px 16px; border-radius: 25px; cursor: pointer; font-size: 0.9rem; 
+            font-weight: 500; transition: all 0.3s; 
+        }
+        .test-btn { background: linear-gradient(45deg, #ff6b6b, #ff5252) !important; }
+        .clear-btn { background: linear-gradient(45deg, #6c5ce7, #a29bfe) !important; }
+        .storage-info { 
+            background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 20px; 
+            color: white; font-size: 0.8rem; font-family: monospace; white-space: nowrap; 
+        }
+
+        /* Pages */
+        .app-page { display: none; padding: 2rem; min-height: calc(100vh - 140px); background: rgba(255,255,255,0.05); }
+        .app-page.active { display: block; }
+        .page-title { 
+            padding: 1.5rem 0; border-bottom: 2px solid rgba(255,255,255,0.1); 
+            margin-bottom: 2rem; color: white; 
+        }
+        .page-title h2 { font-size: 1.8rem; display: flex; align-items: center; gap: 1rem; }
+
+        /* Contacts Grid */
+        .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; max-width: 1400px; margin: 0 auto; }
+        .contact-card { 
+            background: rgba(255,255,255,0.95); border-radius: 20px; padding: 1.5rem; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; 
+            position: relative; overflow: hidden; 
+        }
+        .contact-card:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        .contact-avatar { 
+            width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(45deg, #667eea, #764ba2); 
+            color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; 
+            font-size: 1.2rem; margin-bottom: 1rem; 
+        }
+        .contact-name { font-size: 1.4rem; font-weight: bold; color: #333; margin-bottom: 0.5rem; }
+        .contact-phone { color: #666; font-size: 1rem; margin-bottom: 0.5rem; }
+        .contact-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .action-btn { 
+            padding: 8px 12px; border: none; border-radius: 50%; cursor: pointer; 
+            font-size: 1rem; transition: transform 0.2s; width: 40px; height: 40px; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        .call-btn { background: #4ecdc4; color: white; }
+        .msg-btn { background: #f9ca24; color: white; }
+        .edit-btn { background: #667eea; color: white; }
+        .delete-btn { background: #ff6b6b; color: white; }
+        .fav-btn { 
+            position: absolute; top: 15px; right: 15px; background: none; border: none; 
+            font-size: 1.5rem; cursor: pointer; color: #ffd700; 
+        }
+        .fav-btn.active { color: #ff6b6b; animation: heartBeat 0.3s; }
+        @keyframes heartBeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        .group-tag { 
+            background: linear-gradient(45deg, #667eea, #764ba2); color: white; 
+            padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-top: 0.5rem; 
+            display: inline-block; 
+        }
+        .location-btn { 
+            background: linear-gradient(45deg, #45b7d1, #96ceb4); color: white; 
+            margin-top: 0.5rem; width: 100%; border-radius: 10px; padding: 8px; 
+            border: none; cursor: pointer; font-weight: 500; 
+        }
+        .reminder { 
+            background: #fff3cd; border-left: 4px solid #ffc107; padding: 8px; 
+            margin-top: 0.5rem; border-radius: 5px; font-size: 0.9rem; 
+        }
+
+        /* Groups Page */
+        .groups-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; max-width: 1400px; margin: 0 auto; }
+        .group-card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; text-align: center; }
+        .group-card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        .group-color { height: 8px; position: absolute; top: 0; left: 0; right: 0; border-radius: 20px 20px 0 0; }
+        .group-name { font-size: 1.5rem; font-weight: bold; color: #333; margin-bottom: 1rem; }
+        .group-count { color: #666; font-size: 1.1rem; }
+        .group-contacts { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; justify-content: center; }
+        .group-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #667eea, #764ba2); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+
+        /* Modal */
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 2rem; border-radius: 20px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; position: relative; }
+        .close { position: absolute; top: 20px; right: 30px; font-size: 2rem; cursor: pointer; color: #999; }
+        select, textarea { width: 100%; padding: 12px; margin: 0.5rem 0; border: 2px solid #eee; border-radius: 10px; }
+
+        /* Responsive */
+        @media (max-width: 768px) { 
+            .contacts-grid, .groups-grid { grid-template-columns: 1fr; padding: 1rem; }
+            .header { flex-direction: column; gap: 1rem; text-align: center; }
+            .nav-tabs { order: 3; width: 100%; justify-content: center; }
+            .controls { order: 2; width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Popup -->
+    <div id="splash">
+        <div class="particles" id="particles"></div>
+        <div class="title">Contact Hub</div>
+        <div class="subtitle">Your Smart Contact Manager</div>
+        <button class="enter-btn" onclick="enterApp()"><i class="fas fa-arrow-right"></i> Enter</button>
+    </div>
+
+    <!-- Login Page -->
+    <div id="login-page">
+        <div class="login-card">
+            <h2><i class="fas fa-lock"></i> Welcome Back</h2>
+            <input type="text" id="username" placeholder="Username" value="admin">
+            <input type="password" id="password" placeholder="Password" value="123">
+            <button class="login-btn" onclick="login()"><i class="fas fa-sign-in-alt"></i> Login to Contact Hub</button>
+        </div>
+    </div>
+
+    <!-- Main App with Tabs -->
+    <div id="app">
+        <div class="header">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="showPage('all')"><i class="fas fa-address-book"></i> All Contacts</button>
+                <button class="tab-btn" onclick="showPage('favorites')"><i class="fas fa-heart"></i> Favorites</button>
+                <button class="tab-btn" onclick="showPage('groups')"><i class="fas fa-users"></i> Groups</button>
+            </div>
+            <div class="controls">
+                <input type="text" id="search" placeholder="🔍 Search contacts..." oninput="searchContacts()">
+                <button id="voice-btn" onclick="toggleVoiceSearch()"><i class="fas fa-microphone"></i></button>
+                <button id="add-contact" onclick="openModal('add')"><i class="fas fa-plus"></i> Add Contact</button>
+            </div>
+        </div>
+
+        <!-- Page 1: All Contacts -->
+        <div id="page-all" class="app-page active">
+            <div class="page-title"><h2>All Contacts (<span id="all-count">0</span>)</h2></div>
+            <div class="contacts-grid" id="contacts-grid-all"></div>
+        </div>
+
+        <!-- Page 2: Favorites -->
+        <div id="page-favorites" class="app-page">
+            <div class="page-title"><h2>Favorites (<span id="fav-count">0</span>)</h2></div>
+            <div class="contacts-grid" id="contacts-grid-fav"></div>
+        </div>
+
+        <!-- Page 3: Groups -->
+        <div id="page-groups" class="app-page">
+            <div class="page-title"><h2>All Groups (<span id="group-count">0</span>)</h2></div>
+            <div class="groups-grid" id="groups-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Add Contact</h2>
+            <form id="contact-form">
+                <input type="file" id="avatar" accept="image/*" onchange="previewAvatar()">
+                <div class="contact-avatar" id="avatar-preview">👤</div>
+                <input type="text" id="name" placeholder="Name *" required>
+                <input type="tel" id="phone" placeholder="Phone *">
+                <input type="email" id="email" placeholder="Email">
+                <input type="date" id="birthday" placeholder="Birthday">
+                <input type="text" id="group" placeholder="Group (e.g. Family)">
+                <textarea id="notes" placeholder="Notes"></textarea>
+                <button type="submit" class="login-btn" style="margin-top:1rem;">Save Contact</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize app with 15 sample contacts
+        let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+        let editingId = null;
+        let recognition = null;
+        let watchId = null;
+        let currentPage = 'all';
+        createParticles();
+
+        // Pre-load 15 sample contacts if empty
+        if (contacts.length === 0) {
+            contacts = [
+                { id: 1, name: "Mom", phone: "+91-9876543210", email: "mom@example.com", birthday: "1970-05-15", group: "Family", notes: "Call every weekend", favorite: true, avatar: null, location: null },
+                { id: 2, name: "Dad", phone: "+91-9876543211", email: "dad@example.com", birthday: "1968-08-22", group: "Family", notes: "Home address: Narnaund", favorite: true, avatar: null, location: null },
+                { id: 3, name: "Sister Priya", phone: "+91-9876543212", email: "priya@example.com", birthday: "1998-03-10", group: "Family", notes: "Birthday next week!", favorite: true, avatar: null, location: null },
+                { id: 4, name: "Rahul Sharma", phone: "+91-9876543213", email: "rahul@vignan.ac.in", birthday: "2004-07-18", group: "College", notes: "CSE batchmate", favorite: true, avatar: null, location: null },
+                { id: 5, name: "Anita Verma", phone: "+91-9876543214", email: "anita@vignan.ac.in", birthday: "2005-01-25", group: "College", notes: "Class rep", favorite: false, avatar: null, location: null },
+                { id: 6, name: "Vikram Singh", phone: "+91-9876543215", email: "vikram@gmail.com", birthday: "2004-11-12", group: "College", notes: "Cricket captain", favorite: false, avatar: null, location: null },
+                { id: 7, name: "Dr. Rajesh Kumar", phone: "+91-9876543216", email: "rajesh@vignan.ac.in", birthday: "1975-09-30", group: "Faculty", notes: "CSE HOD", favorite: true, avatar: null, location: null },
+                { id: 8, name: "LinkedIn Recruiter", phone: "+91-9876543217", email: "recruiter@company.com", birthday: "", group: "Career", notes: "Internships", favorite: true, avatar: null, location: null },
+                { id: 9, name: "Shopkeeper uncle", phone: "+91-9876543218", email: "", birthday: "", group: "Local", notes: "Narnaund stationery", favorite: false, avatar: null, location: null },
+                { id: 10, name: "Auto driver Raju", phone: "+91-9876543219", email: "", birthday: "", group: "Local", notes: "College trips", favorite: false, avatar: null, location: null },
+                { id: 16, name: "Neha Gupta", phone: "+91-9876543225", email: "neha@gmail.com", birthday: "2004-09-05", group: "College", notes: "Data Science group", favorite: false, avatar: null, location: null },
+                { id: 20, name: "Divya Singh", phone: "+91-9876543229", email: "divya@vignan.ac.in", birthday: "2005-05-22", group: "College", notes: "Project lead", favorite: true, avatar: null, location: null }
+            ];
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+        }
+
+        // Splash to Login
+        function enterApp() {
+            document.getElementById('splash').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('splash').style.display = 'none';
+                document.getElementById('login-page').style.display = 'flex';
+            }, 1000);
+        }
+
+        // Login
+        function login() {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            renderAllContacts();
+            checkReminders();
+            checkDuplicates();
+        }
+
+        // Particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particle.style.width = particle.style.height = (Math.random() * 4 + 2) + 'px';
+                particles.appendChild(particle);
+            }
+        }
+
+        // Tab Navigation
+        function showPage(page) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${page}`).classList.add('active');
+            currentPage = page;
+            if (page === 'all') renderAllContacts();
+            if (page === 'favorites') renderFavorites();
+            if (page === 'groups') renderGroups();
+        }
+
+        // Page Render Functions
+        function renderAllContacts(filtered = contacts) {
+            const grid = document.getElementById('contacts-grid-all');
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+            document.getElementById('all-count').textContent = filtered.length;
+            grid.innerHTML = createContactHTML(filtered);
+        }
+
+        function renderFavorites() {
+            const favorites = contacts.filter(c => c.favorite);
+            const grid = document.getElementById('contacts-grid-fav');
+            favorites.sort((a, b) => a.name.localeCompare(b.name));
+            document.getElementById('fav-count').textContent = favorites.length;
+            grid.innerHTML = createContactHTML(favorites);
+        }
+
+        function renderGroups() {
+            const groups = {};
+            contacts.forEach(contact => {
+                const group = contact.group || 'Uncategorized';
+                if (!groups[group]) groups[group] = [];
+                groups[group].push(contact);
+            });
+            const grid = document.getElementById('groups-grid');
+            document.getElementById('group-count').textContent = Object.keys(groups).length;
+            grid.innerHTML = Object.entries(groups).map(([groupName, groupContacts], index) => {
+                const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7'];
+                return `
+                    <div class="group-card" onclick="filterByGroup('${groupName}')">
+                        <div class="group-color" style="background: linear-gradient(90deg, ${colors[index % colors.length]}, #ddd);"></div>
+                        <div class="group-name">${groupName}</div>
+                        <div class="group-count">${groupContacts.length} contacts</div>
+                        <div class="group-contacts">
+                            ${groupContacts.slice(0, 6).map(c => `<div class="group-avatar">${c.name[0]}</div>`).join('')}
+                            ${groupContacts.length > 6 ? `<div class="group-avatar">+${groupContacts.length-6}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function createContactHTML(contactsList) {
+            return contactsList.map(contact => `
+                <div class="contact-card">
+                    <button class="fav-btn ${contact.favorite ? 'active' : ''}" onclick="toggleFavorite(${contact.id})">${contact.favorite ? '❤️' : '🤍'}</button>
+                    <div class="contact-avatar">${contact.avatar ? `<img src="${contact.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : contact.name[0]}</div>
+                    <div class="contact-name">${contact.name}</div>
+                    <div class="contact-phone">${contact.phone || 'No phone'}</div>
+                    ${contact.email ? `<div>${contact.email}</div>` : ''}
+                    <span class="group-tag">${contact.group || 'Uncategorized'}</span>
+                    ${contact.birthday && isUpcomingBirthday(contact.birthday) ? `<div class="reminder">🎉 Birthday soon!</div>` : ''}
+                    <div class="contact-actions">
+                        <button class="action-btn call-btn" onclick="callContact('${contact.phone}')"><i class="fas fa-phone"></i></button>
+                        <button class="action-btn msg-btn" onclick="msgContact('${contact.phone}')"><i class="fas fa-sms"></i></button>
+                        <button class="action-btn edit-btn" onclick="editContact(${contact.id})"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" onclick="deleteContact(${contact.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    ${contact.phone ? `<button class="location-btn" onclick="trackLocation(${contact.id})">📍 Track Location</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Search
+        function searchContacts() {
+            const query = document.getElementById('search').value.toLowerCase();
+            if (currentPage === 'all') {
+                const filtered = contacts.filter(c => 
+                    c.name.toLowerCase().includes(query) || 
+                    c.phone?.includes(query) || 
+                    c.email?.toLowerCase().includes(query) ||
+                    c.group?.toLowerCase().includes(query)
+                );
+                renderAllContacts(filtered);
+            }
+        }
+
+        function filterByGroup(groupName) {
+            showPage('all');
+            document.getElementById('search').value = groupName;
+            searchContacts();
+        }
+
+        // Modal Functions
+        function openModal(mode, id = null) {
+            editingId = id;
+            document.getElementById('modal-title').textContent = mode === 'add' ? 'Add Contact' : 'Edit Contact';
+            if (id) {
+                const contact = contacts.find(c => c.id === id);
+                document.getElementById('name').value = contact.name;
+                document.getElementById('phone').value = contact.phone;
+                document.getElementById('email').value = contact.email;
+                document.getElementById('birthday').value = contact.birthday;
+                document.getElementById('group').value = contact.group;
+                document.getElementById('notes').value = contact.notes;
+            }
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('contact-form').reset();
+            editingId = null;
+            document.getElementById('avatar-preview').textContent = '👤';
+        }
+
+        document.getElementById('contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const contact = {
+                id: editingId || Date.now(),
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                birthday: document.getElementById('birthday').value,
+                group: document.getElementById('group').value || 'Uncategorized',
+                notes: document.getElementById('notes').value,
+                favorite: false,
+                avatar: document.getElementById('avatar').files[0] ? URL.createObjectURL(document.getElementById('avatar').files[0]) : null,
+                location: null
+            };
+            if (editingId) {
+                const index = contacts.findIndex(c => c.id === editingId);
+                contacts[index] = contact;
+            } else {
+                contacts.unshift(contact);
+            }
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+            closeModal();
+            renderAllContacts();
+            renderFavorites();
+            renderGroups();
+            checkDuplicates();
+        });
+
+        function previewAvatar() {
+            const file = document.getElementById('avatar').files[0];
+            if (file) {
+                document.getElementById('avatar-preview').innerHTML = `<img src="${URL.createObjectURL(file)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+            }
+        }
+
+        // Contact Actions
+        function toggleFavorite(id) {
+            const contact = contacts.find(c => c.id === id);
+            contact.favorite = !contact.favorite;
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+            renderAllContacts();
+            renderFavorites();
+        }
+
+        function deleteContact(id) {
+            if (confirm('Delete this contact?')) {
+                contacts = contacts.filter(c => c.id !== id);
+                localStorage.setItem('contacts', JSON.stringify(contacts));
+                renderAllContacts();
+                renderFavorites();
+                renderGroups();
+            }
+        }
+
+        function editContact(id) {
+            openModal('edit', id);
+        }
+
+        function callContact(phone) {
+            window.open(`tel:${phone}`, '_blank');
+        }
+
+        function msgContact(phone) {
+            window.open(`sms:${phone}`, '_blank');
+        }
+
+        function trackLocation(id) {
+            if (!navigator.geolocation) return alert('Geolocation not supported');
+            if (watchId) navigator.geolocation.clearWatch(watchId);
+            watchId = navigator.geolocation.watchPosition((pos) => {
+                const contact = contacts.find(c => c.id === id);
+                contact.location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                localStorage.setItem('contacts', JSON.stringify(contacts));
+                alert(`Location: ${contact.location.lat.toFixed(4)}, ${contact.location.lng.toFixed(4)}`);
+            }, () => alert('Location access denied'), { enableHighAccuracy: true });
+        }
+
+        // Smart Features
+        function checkDuplicates() {
+            const dups = [];
+            for (let i = 0; i < contacts.length; i++) {
+                for (let j = i + 1; j < contacts.length; j++) {
+                    if (contacts[i].phone === contacts[j].phone && contacts[i].name.toLowerCase() === contacts[j].name.toLowerCase()) {
+                        dups.push([contacts[i], contacts[j]]);
+                    }
+                }
+            }
+            if (dups.length > 0) alert(`Found ${dups.length} duplicate(s)`);
+        }
+
+        function isUpcomingBirthday(bday) {
+            const today = new Date();
+            const bdayDate = new Date(today.getFullYear(), new Date(bday).getMonth(), new Date(bday).getDate());
+            const diff = bdayDate - today;
+            return diff > 0 && diff < 7 * 24 * 60 * 60 * 1000;
+        }
+
+        function checkReminders() {
+            contacts.forEach(contact => {
+                if (contact.birthday && isUpcomingBirthday(contact.birthday)) {
+                    if (Notification.permission === 'granted') {
+                        new Notification(`Birthday reminder: ${contact.name}`);
+                    }
+                }
+            });
+        }
+
+        // Voice Search
+        function toggleVoiceSearch() {
+            const btn = document.getElementById('voice-btn');
+            if (!('webkitSpeechRecognition' in window)) {
+                alert('Voice search not supported');
+                return;
+            }
+            if (btn.classList.contains('active')) {
+                if (recognition) recognition.stop();
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-microphone"></i>';
+            } else {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                recognition.onresult = (e) => {
+                    const query = e.results[0][0].transcript.toLowerCase();
+                    document.getElementById('search').value = query;
+                    searchContacts();
+                };
+                recognition.onerror = () => toggleVoiceSearch();
+                recognition.start();
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+            }
+        }
+
+        Notification.requestPermission();
+    </script>
+</body>
+</html>
