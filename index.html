@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Smart Contact Book</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  margin:0;
+  color:#fff;
+}
+header{
+  text-align:center;
+  padding:20px;
+  background:rgba(0,0,0,0.4);
+}
+.container{
+  padding:20px;
+}
+.card{
+  background:#fff;
+  color:#000;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+input,select,button{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+button{
+  background:#203a43;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+button:hover{
+  background:#2c5364;
+}
+.contact{
+  border-bottom:1px solid #ddd;
+  padding:10px 0;
+}
+.badge{
+  display:inline-block;
+  background:#2c5364;
+  color:#fff;
+  padding:4px 8px;
+  border-radius:5px;
+  font-size:12px;
+  margin-right:5px;
+}
+.emergency{
+  background:red;
+}
+.hidden{
+  background:#555;
+}
+.favorite{
+  color:gold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>📇 AI Smart Contact Book</h1>
+  <p>Smart • Safe • Useful for People</p>
+</header>
+
+<div class="container">
+
+<!-- ADD CONTACT -->
+<div class="card">
+<h3>Add Contact</h3>
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone Number">
+
+<select id="blood">
+<option value="">Select Blood Group</option>
+<option>A+</option><option>A-</option>
+<option>B+</option><option>B-</option>
+<option>O+</option><option>O-</option>
+<option>AB+</option><option>AB-</option>
+</select>
+
+<input type="date" id="birthday">
+
+<label><input type="checkbox" id="emergency"> Emergency Contact</label><br>
+<label><input type="checkbox" id="hidden"> Hidden Contact</label>
+
+<button onclick="addContact()">Add Contact</button>
+</div>
+
+<!-- SEARCH BLOOD GROUP -->
+<div class="card">
+<h3>🩸 Find Blood Group</h3>
+<select id="searchBlood" onchange="searchBlood()">
+<option value="">Select Blood Group</option>
+<option>A+</option><option>A-</option>
+<option>B+</option><option>B-</option>
+<option>O+</option><option>O-</option>
+<option>AB+</option><option>AB-</option>
+</select>
+</div>
+
+<!-- CONTACT LIST -->
+<div class="card">
+<h3>All Contacts</h3>
+<div id="contactList"></div>
+</div>
+
+</div>
+
+<script>
+let contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+const PIN = "1234";
+
+function addContact(){
+  let contact = {
+    name: name.value,
+    phone: phone.value,
+    blood: blood.value,
+    birthday: birthday.value,
+    emergency: emergency.checked,
+    hidden: hidden.checked,
+    callCount: Math.floor(Math.random()*15)
+  };
+
+  if(contact.name=="" || contact.phone==""){
+    alert("Enter name & phone");
+    return;
+  }
+
+  // AI LOGIC – auto favorite
+  contact.favorite = contact.callCount > 8 || contact.emergency;
+
+  contacts.push(contact);
+  save();
+  display();
+}
+
+function display(list = contacts){
+  let html = "";
+  list.forEach((c,i)=>{
+    if(c.hidden){
+      let pin = prompt("Enter PIN to view hidden contact");
+      if(pin !== PIN) return;
+    }
+
+    // Birthday reminder
+    let today = new Date().toISOString().slice(5,10);
+    if(c.birthday && c.birthday.slice(5,10) === today){
+      alert("🎂 Today is "+c.name+"'s Birthday!");
+    }
+
+    html += `
+    <div class="contact">
+      <strong>${c.name} ${c.favorite ? "⭐":""}</strong><br>
+      📞 ${c.phone}<br>
+      ${c.blood ? `<span class="badge">${c.blood}</span>`:""}
+      ${c.emergency ? `<span class="badge emergency">EMERGENCY</span>`:""}
+      ${c.hidden ? `<span class="badge hidden">HIDDEN</span>`:""}
+    </div>`;
+  });
+  contactList.innerHTML = html;
+}
+
+function searchBlood(){
+  let bg = searchBlood.value;
+  if(bg==""){ display(); return; }
+  let filtered = contacts.filter(c=>c.blood===bg);
+  display(filtered);
+}
+
+function save(){
+  localStorage.setItem("contacts",JSON.stringify(contacts));
+}
+
+display();
+</script>
+
+</body>
+</html>
