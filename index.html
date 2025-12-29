@@ -3,253 +3,411 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact Hub - Full Project</title>
+<title>Contact Hub - Advanced</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-font-family:Segoe UI,sans-serif;
-background:linear-gradient(135deg,#b60e6d,#764ba2);
-min-height:100vh;color:#333}
-
-/* Splash */
-#splash{
-position:fixed;inset:0;
-background:#0f0f2d;
-display:flex;flex-direction:column;
-align-items:center;justify-content:center;
-color:white;z-index:999}
-.title{font-size:4rem;color:#4ecdc4;
-text-shadow:0 0 30px #4ecdc4}
-.enter-btn{
-margin-top:2rem;
-padding:15px 40px;
-border:none;border-radius:40px;
-font-size:1.2rem;
-background:linear-gradient(45deg,#ff6b6b,#4ecdc4);
-color:white;cursor:pointer}
-
-/* Login */
-#login-page{display:none;min-height:100vh;
-align-items:center;justify-content:center}
-.login-card{
-background:white;padding:2rem;
-border-radius:20px;
-width:350px;text-align:center}
-input,select,textarea{
-width:100%;padding:12px;margin:10px 0;
-border-radius:10px;border:1px solid #ccc}
-.login-btn{
-background:#667eea;color:white;
-border:none;padding:12px;
-border-radius:10px;cursor:pointer}
-
-/* App */
-#app{display:none}
-.header{
-background:white;padding:1rem;
-display:flex;gap:1rem;flex-wrap:wrap}
-.tab-btn{
-padding:10px 20px;border:none;
-border-radius:20px;
-cursor:pointer}
-.tab-btn.active{background:#667eea;color:white}
-.controls{margin-left:auto;display:flex;gap:.5rem}
-.app-page{display:none;padding:1.5rem}
-.app-page.active{display:block}
-
-/* Cards */
-.contacts-grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-gap:1rem}
-.contact-card{
-background:white;
-padding:1rem;border-radius:20px;
-position:relative}
-.fav-btn{
-position:absolute;top:10px;right:10px;
-border:none;background:none;font-size:1.5rem}
-.group-tag{
-background:#667eea;color:white;
-display:inline-block;
-padding:4px 10px;
-border-radius:20px;font-size:.8rem}
-.action-btn{
-border:none;border-radius:50%;
-width:40px;height:40px;
-cursor:pointer;color:white}
-.call-btn{background:#4ecdc4}
-.msg-btn{background:#f9ca24}
-.edit-btn{background:#667eea}
-.delete-btn{background:#ff6b6b}
-
-/* Modal */
-#modal{
-display:none;position:fixed;inset:0;
-background:rgba(0,0,0,.7);
-justify-content:center;align-items:center}
-.modal-content{
-background:white;padding:2rem;
-border-radius:20px;width:400px}
-.close{float:right;font-size:1.5rem;cursor:pointer}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Segoe UI',sans-serif;min-height:100vh;background:linear-gradient(135deg,#b60e6d 0%,#764ba2 100%);color:#333;transition:all 0.5s;}
+    /* Splash */
+    #splash{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;color:white;}
+    .title{font-size:4rem;color:#4ecdc4;text-shadow:0 0 20px #4ecdc4;animation:glow 2s infinite;margin-bottom:1rem;}
+    @keyframes glow{0%,100%{text-shadow:0 0 20px #4ecdc4;}50%{text-shadow:0 0 40px #ff6b6b;}}
+    .enter-btn{background:linear-gradient(45deg,#ff6b6b,#4ecdc4);color:white;border:none;padding:15px 40px;font-size:1.2rem;border-radius:50px;cursor:pointer;margin-top:2rem;box-shadow:0 10px 30px rgba(255,107,107,0.4);transition:all 0.3s ease;animation:bounce 2s infinite;}
+    .enter-btn:hover{transform:scale(1.05);box-shadow:0 15px 40px rgba(255,107,107,0.6);}
+    @keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-5px);}}
+    /* Login Page */
+    #login-page{display:none;min-height:100vh;justify-content:center;align-items:center;padding:2rem;}
+    .login-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);padding:3rem;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:100%;max-width:400px;text-align:center;}
+    .login-card h2{color:#333;margin-bottom:2rem;font-size:2rem;}
+    input, select{width:100%;padding:15px;margin:1rem 0;border:2px solid #eee;border-radius:10px;font-size:1rem;transition:border 0.3s;}
+    input:focus, select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
+    .login-btn{background:linear-gradient(45deg,#667eea,#764ba2);color:white;border:none;padding:15px;width:100%;border-radius:10px;font-size:1.1rem;cursor:pointer;transition:transform 0.3s;font-weight:600;}
+    .login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(102,126,234,0.4);}
+    /* Header & Tabs */
+    #app{display:none;min-height:100vh;}
+    .header{padding:1rem 2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 2px 20px rgba(0,0,0,0.1);}
+    .nav-tabs{display:flex;gap:0;background:rgba(102,126,234,0.2);border-radius:15px;padding:5px;margin-right:auto;}
+    .tab-btn{background:transparent;border:none;padding:12px 24px;color:rgba(255,255,255,0.8);border-radius:12px;cursor:pointer;font-weight:500;transition:all 0.3s;font-size:0.95rem;display:flex;align-items:center;gap:8px;}
+    .tab-btn.active{background:rgba(255,255,255,0.95);color:#333;box-shadow:0 5px 20px rgba(0,0,0,0.2);}
+    .tab-btn:hover:not(.active){background:rgba(255,255,255,0.3);color:white;}
+    .controls{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;}
+    #search{padding:10px 20px;border:2px solid #667eea;border-radius:25px;background:white;cursor:pointer;transition:all 0.3s;font-size:0.9rem;min-width:200px;}
+    #voice-btn{padding:10px;border:2px solid #667eea;border-radius:50%;background:white;cursor:pointer;transition:all 0.3s;width:45px;height:45px;display:flex;align-items:center;justify-content:center;}
+    #voice-btn.active{background:#ff6b6b;color:white;border-color:#ff6b6b;}
+    #add-contact, .test-btn, .clear-btn, #theme-btn, #logout-btn{background:linear-gradient(45deg,#4ecdc4,#44a08d);color:white;border:none;padding:10px 16px;border-radius:25px;cursor:pointer;font-size:0.9rem;font-weight:500;transition:all 0.3s;}
+    #theme-btn{background:linear-gradient(45deg,#f0932b,#eb4d4b);}
+    #logout-btn{background:linear-gradient(45deg,#6c5ce7,#a29bfe);}
+    .storage-info{background:rgba(0,0,0,0.2);padding:8px 12px;border-radius:20px;color:white;font-size:0.8rem;font-family:monospace;white-space:nowrap;}
+    /* Pages */
+    .app-page{display:none;padding:2rem;min-height:calc(100vh - 140px);background:rgba(255,255,255,0.05);}
+    .app-page.active{display:block;}
+    .page-title{padding:1.5rem 0;border-bottom:2px solid rgba(255,255,255,0.1);margin-bottom:2rem;color:white;}
+    .page-title h2{font-size:1.8rem;display:flex;align-items:center;gap:1rem;}
+    /* Contacts Grid */
+    .contacts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:2rem;max-width:1400px;margin:0 auto;}
+    .contact-card{background:rgba(255,255,255,0.95);border-radius:20px;padding:1.5rem;box-shadow:0 10px 40px rgba(0,0,0,0.1);transition:transform 0.3s, box-shadow 0.3s;position:relative;overflow:hidden;}
+    .contact-card:hover{transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+    .contact-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(45deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;margin-bottom:1rem;}
+    .contact-name{font-size:1.4rem;font-weight:bold;color:#333;margin-bottom:0.5rem;}
+    .contact-phone,.contact-blood{color:#666;font-size:1rem;margin-bottom:0.5rem;}
+    .contact-actions{display:flex;gap:0.5rem;margin-top:1rem;}
+    .action-btn{padding:8px 12px;border:none;border-radius:50%;cursor:pointer;font-size:1rem;transition:transform 0.2s;width:40px;height:40px;display:flex;align-items:center;justify-content:center;}
+    .call-btn{background:#4ecdc4;color:white;}
+    .msg-btn{background:#f9ca24;color:white;}
+    .edit-btn{background:#667eea;color:white;}
+    .delete-btn{background:#ff6b6b;color:white;}
+    .fav-btn{position:absolute;top:15px;right:15px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#ffd700;}
+    .fav-btn.active{color:#ff6b6b;animation:heartBeat 0.3s;}
+    @keyframes heartBeat{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+    .group-tag{background:linear-gradient(45deg,#667eea,#764ba2);color:white;padding:4px 12px;border-radius:20px;font-size:0.8rem;margin-top:0.5rem;display:inline-block;}
+    .location-btn{background:linear-gradient(45deg,#45b7d1,#96ceb4);color:white;margin-top:0.5rem;width:100%;border-radius:10px;padding:8px;border:none;cursor:pointer;font-weight:500;}
+    .reminder{background:#fff3cd;border-left:4px solid #ffc107;padding:8px;margin-top:0.5rem;border-radius:5px;font-size:0.9rem;}
+    /* Groups */
+    .groups-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;max-width:1400px;margin:0 auto;}
+    .group-card{background:rgba(255,255,255,0.95);border-radius:20px;padding:2rem;box-shadow:0 10px 40px rgba(0,0,0,0.1);cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;text-align:center;}
+    .group-card:hover{transform:translateY(-10px);box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+    .group-color{height:8px;position:absolute;top:0;left:0;right:0;border-radius:20px 20px 0 0;}
+    .group-name{font-size:1.5rem;font-weight:bold;color:#333;margin-bottom:1rem;}
+    .group-count{color:#666;font-size:1.1rem;}
+    .group-contacts{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem;justify-content:center;}
+    .group-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(45deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-size:0.8rem;}
+    /* Modal */
+    #modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center;}
+    .modal-content{background:white;padding:2rem;border-radius:20px;width:90%;max-width:500px;max-height:80vh;overflow-y:auto;position:relative;}
+    .close{position:absolute;top:20px;right:30px;font-size:2rem;cursor:pointer;color:#999;}
+    textarea{width:100%;padding:12px;margin:0.5rem 0;border:2px solid #eee;border-radius:10px;}
+    @media(max-width:768px){.contacts-grid,.groups-grid{grid-template-columns:1fr;padding:1rem;}.header{flex-direction:column;gap:1rem;text-align:center;}.nav-tabs{order:3;width:100%;justify-content:center;}.controls{order:2;width:100%;justify-content:center;}}
 </style>
 </head>
-
 <body>
-
-<!-- Splash -->
+<!-- Splash Popup -->
 <div id="splash">
-<div class="title">Contact Hub</div>
-<p>Your Smart Contact Manager</p>
-<button class="enter-btn" onclick="enterApp()">Enter</button>
+    <div class="title">Contact Hub</div>
+    <div class="subtitle">Your Smart Contact Manager</div>
+    <button class="enter-btn" onclick="enterApp()"><i class="fas fa-arrow-right"></i> Enter</button>
 </div>
 
-<!-- Login -->
+<!-- Login Page -->
 <div id="login-page">
-<div class="login-card">
-<h2>Login</h2>
-<input value="admin">
-<input type="password" value="123">
-<button class="login-btn" onclick="login()">Login</button>
-</div>
+    <div class="login-card">
+        <h2><i class="fas fa-lock"></i> Welcome Back</h2>
+        <input type="text" id="username" placeholder="Username" value="admin">
+        <input type="password" id="password" placeholder="Password" value="123">
+        <button class="login-btn" onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
+    </div>
 </div>
 
-<!-- App -->
+<!-- Main App -->
 <div id="app">
-<div class="header">
-<button class="tab-btn active" onclick="showPage('all')">All</button>
-<button class="tab-btn" onclick="showPage('fav')">Favorites</button>
-<button class="tab-btn" onclick="showPage('groups')">Groups</button>
-<button class="tab-btn" onclick="showPage('history')">Call History</button>
+    <div class="header">
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showPage('all')"><i class="fas fa-address-book"></i> All Contacts</button>
+            <button class="tab-btn" onclick="showPage('favorites')"><i class="fas fa-heart"></i> Favorites</button>
+            <button class="tab-btn" onclick="showPage('groups')"><i class="fas fa-users"></i> Groups</button>
+            <button class="tab-btn" onclick="showPage('history')"><i class="fas fa-history"></i> Call History</button>
+            <button class="tab-btn" onclick="showPage('stats')"><i class="fas fa-chart-line"></i> Stats</button>
+        </div>
+        <div class="controls">
+            <input type="text" id="search" placeholder="🔍 Search contacts..." oninput="searchContacts()">
+            <button id="voice-btn" onclick="toggleVoiceSearch()"><i class="fas fa-microphone"></i></button>
+            <button id="add-contact" onclick="openModal('add')"><i class="fas fa-plus"></i> Add Contact</button>
+            <button id="theme-btn" onclick="toggleTheme()"><i class="fas fa-adjust"></i> Theme</button>
+            <button id="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
 
-<div class="controls">
-<input id="search" placeholder="Search..." oninput="searchContacts()">
-<button onclick="openModal()">+ Add</button>
-</div>
-</div>
+    <!-- All Contacts Page -->
+    <div id="page-all" class="app-page active">
+        <div class="page-title"><h2>All Contacts (<span id="all-count">0</span>)</h2></div>
+        <div class="contacts-grid" id="contacts-grid-all"></div>
+    </div>
 
-<div id="page-all" class="app-page active">
-<div class="contacts-grid" id="all-grid"></div>
-</div>
+    <!-- Favorites Page -->
+    <div id="page-favorites" class="app-page">
+        <div class="page-title"><h2>Favorites (<span id="fav-count">0</span>)</h2></div>
+        <div class="contacts-grid" id="contacts-grid-fav"></div>
+    </div>
 
-<div id="page-fav" class="app-page">
-<div class="contacts-grid" id="fav-grid"></div>
-</div>
+    <!-- Groups Page -->
+    <div id="page-groups" class="app-page">
+        <div class="page-title"><h2>All Groups (<span id="group-count">0</span>)</h2></div>
+        <div class="groups-grid" id="groups-grid"></div>
+    </div>
 
-<div id="page-groups" class="app-page">
-<div class="contacts-grid" id="group-grid"></div>
-</div>
+    <!-- Call History Page -->
+    <div id="page-history" class="app-page">
+        <div class="page-title"><h2>Call History</h2></div>
+        <div id="call-history-container"></div>
+    </div>
 
-<div id="page-history" class="app-page">
-<div class="contacts-grid" id="history-grid"></div>
-</div>
+    <!-- Stats Page -->
+    <div id="page-stats" class="app-page">
+        <div class="page-title"><h2>Call Statistics</h2></div>
+        <div id="call-stats-container"></div>
+    </div>
 </div>
 
 <!-- Modal -->
 <div id="modal">
-<div class="modal-content">
-<span class="close" onclick="closeModal()">&times;</span>
-<form onsubmit="saveContact(event)">
-<input id="name" placeholder="Name" required>
-<input id="phone" placeholder="Phone">
-<select id="blood">
-<option value="">Blood Group</option>
-<option>A+</option><option>B+</option><option>O+</option><option>AB+</option>
-<option>A-</option><option>B-</option><option>O-</option><option>AB-</option>
-</select>
-<input id="group" placeholder="Group">
-<button class="login-btn">Save</button>
-</form>
-</div>
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modal-title">Add Contact</h2>
+        <form id="contact-form">
+            <input type="file" id="avatar" accept="image/*" onchange="previewAvatar()">
+            <div class="contact-avatar" id="avatar-preview">👤</div>
+            <input type="text" id="name" placeholder="Name *" required>
+            <input type="tel" id="phone" placeholder="Phone *">
+            <input type="email" id="email" placeholder="Email">
+            <input type="date" id="birthday" placeholder="Birthday">
+            <input type="text" id="blood-group" placeholder="Blood Group">
+            <input type="text" id="group" placeholder="Group">
+            <textarea id="notes" placeholder="Notes"></textarea>
+            <button type="submit" class="login-btn" style="margin-top:1rem;">Save Contact</button>
+        </form>
+    </div>
 </div>
 
 <script>
-let contacts=JSON.parse(localStorage.getItem("contacts"))||[];
-let callHistory=JSON.parse(localStorage.getItem("history"))||[];
-let editId=null;
+// --- DATA INIT ---
+let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+let editingId = null;
+let recognition = null;
+let watchId = null;
+let currentPage = 'all';
+let darkTheme = true;
 
-/* Navigation */
+// --- SPLASH TO LOGIN ---
 function enterApp(){
-splash.style.display="none";
-login-page.style.display="flex"}
+    document.getElementById('splash').style.display='none';
+    document.getElementById('login-page').style.display='flex';
+}
+
+// --- LOGIN ---
 function login(){
-login-page.style.display="none";
-app.style.display="block";
-renderAll()}
-function showPage(p){
-document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-event.target.classList.add("active");
-document.querySelectorAll(".app-page").forEach(p=>p.classList.remove("active"));
-document.getElementById("page-"+p).classList.add("active");
-if(p==="fav")renderFav();
-if(p==="groups")renderGroups();
-if(p==="history")renderHistory();}
+    document.getElementById('login-page').style.display='none';
+    document.getElementById('app').style.display='block';
+    renderAllContacts();
+    renderFavorites();
+    renderGroups();
+    checkReminders();
+}
 
-/* Render */
-function renderAll(list=contacts){
-all-grid.innerHTML=list.map(card).join("")}
-function renderFav(){
-fav-grid.innerHTML=contacts.filter(c=>c.fav).map(card).join("")}
+// --- LOGOUT ---
+function logout(){
+    if(confirm("Logout?")){
+        document.getElementById('app').style.display='none';
+        document.getElementById('login-page').style.display='flex';
+    }
+}
+
+// --- THEME TOGGLE ---
+function toggleTheme(){
+    darkTheme = !darkTheme;
+    if(darkTheme){
+        document.body.style.background='linear-gradient(135deg,#b60e6d 0%,#764ba2 100%)';
+        document.body.style.color='#fff';
+    }else{
+        document.body.style.background='#f0f0f0';
+        document.body.style.color='#333';
+    }
+}
+
+// --- PAGE SWITCH ---
+function showPage(page){
+    document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('page-'+page).classList.add('active');
+    document.querySelector(`.tab-btn[onclick="showPage('${page}')"]`).classList.add('active');
+}
+
+// --- CONTACT MODAL ---
+function openModal(mode,id=null){
+    document.getElementById('modal').style.display='flex';
+    if(mode==='add'){document.getElementById('modal-title').innerText='Add Contact';editingId=null;document.getElementById('contact-form').reset();document.getElementById('avatar-preview').innerText='👤';}
+    if(mode==='edit'){
+        const c = contacts.find(c=>c.id===id);editingId=id;
+        document.getElementById('modal-title').innerText='Edit Contact';
+        document.getElementById('name').value=c.name;
+        document.getElementById('phone').value=c.phone;
+        document.getElementById('email').value=c.email;
+        document.getElementById('birthday').value=c.birthday;
+        document.getElementById('blood-group').value=c.bloodGroup;
+        document.getElementById('group').value=c.group;
+        document.getElementById('notes').value=c.notes;
+        document.getElementById('avatar-preview').innerText=c.avatar?'':'👤';
+    }
+}
+function closeModal(){document.getElementById('modal').style.display='none';}
+
+// --- AVATAR PREVIEW ---
+function previewAvatar(){
+    const file=document.getElementById('avatar').files[0];
+    if(file){
+        const reader=new FileReader();
+        reader.onload=()=>document.getElementById('avatar-preview').style.backgroundImage=`url(${reader.result})`;
+        reader.readAsDataURL(file);
+    }
+}
+
+// --- ADD / EDIT CONTACT ---
+document.getElementById('contact-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    const contact={
+        id:editingId||Date.now(),
+        name:document.getElementById('name').value,
+        phone:document.getElementById('phone').value,
+        email:document.getElementById('email').value,
+        birthday:document.getElementById('birthday').value,
+        group:document.getElementById('group').value||'Uncategorized',
+        notes:document.getElementById('notes').value,
+        favorite:false,
+        avatar:document.getElementById('avatar').files[0]?URL.createObjectURL(document.getElementById('avatar').files[0]):null,
+        bloodGroup:document.getElementById('blood-group').value,
+        callHistory:[]
+    };
+    if(editingId){
+        const index = contacts.findIndex(c=>c.id===editingId);
+        contacts[index]=contact;
+    }else{
+        contacts.push(contact);
+    }
+    localStorage.setItem('contacts',JSON.stringify(contacts));
+    closeModal();
+    renderAllContacts();renderFavorites();renderGroups();
+});
+
+// --- RENDER FUNCTIONS ---
+function renderAllContacts(){
+    const grid=document.getElementById('contacts-grid-all');
+    grid.innerHTML='';
+    contacts.forEach(c=>{
+        const card=document.createElement('div');card.classList.add('contact-card');
+        card.innerHTML=`
+        <button class="fav-btn ${c.favorite?'active':''}" onclick="toggleFav(${c.id},this)"><i class="fas fa-heart"></i></button>
+        <div class="contact-avatar">${c.avatar?`<img src="${c.avatar}" style="width:100%;height:100%;border-radius:50%;">`:'👤'}</div>
+        <div class="contact-name">${c.name}</div>
+        <div class="contact-phone">📞 ${c.phone}</div>
+        <div class="contact-blood">🩸 ${c.bloodGroup||'N/A'}</div>
+        <div class="group-tag">${c.group}</div>
+        <div class="contact-actions">
+            <button class="action-btn call-btn" onclick="callContact(${c.id})"><i class="fas fa-phone"></i></button>
+            <button class="action-btn msg-btn" onclick="msgContact(${c.id})"><i class="fas fa-comment-alt"></i></button>
+            <button class="action-btn edit-btn" onclick="openModal('edit',${c.id})"><i class="fas fa-edit"></i></button>
+            <button class="action-btn delete-btn" onclick="deleteContact(${c.id})"><i class="fas fa-trash"></i></button>
+        </div>`;
+        grid.appendChild(card);
+    });
+    document.getElementById('all-count').innerText=contacts.length;
+}
+
+function renderFavorites(){
+    const grid=document.getElementById('contacts-grid-fav');grid.innerHTML='';
+    const favs=contacts.filter(c=>c.favorite);
+    favs.forEach(c=>{
+        const card=document.createElement('div');card.classList.add('contact-card');
+        card.innerHTML=`
+        <button class="fav-btn active" onclick="toggleFav(${c.id},this)"><i class="fas fa-heart"></i></button>
+        <div class="contact-avatar">${c.avatar?`<img src="${c.avatar}" style="width:100%;height:100%;border-radius:50%;">`:'👤'}</div>
+        <div class="contact-name">${c.name}</div>
+        <div class="contact-phone">📞 ${c.phone}</div>
+        <div class="contact-blood">🩸 ${c.bloodGroup||'N/A'}</div>`;
+        grid.appendChild(card);
+    });
+    document.getElementById('fav-count').innerText=favs.length;
+}
+
 function renderGroups(){
-let g={};
-contacts.forEach(c=>{g[c.group||"Other"]=g[c.group||"Other"]||[];g[c.group||"Other"].push(c)})
-group-grid.innerHTML=Object.entries(g).map(([k,v])=>`
-<div class="contact-card">
-<b>${k}</b><br>${v.length} contacts
-</div>`).join("")}
-function renderHistory(){
-history-grid.innerHTML=callHistory.map(h=>`
-<div class="contact-card">
-<b>${h.name}</b><br>${h.phone}<br>
-<span class="group-tag">${h.time}</span>
-</div>`).join("")}
+    const grid=document.getElementById('groups-grid');grid.innerHTML='';
+    const groups=[...new Set(contacts.map(c=>c.group))];
+    groups.forEach(g=>{
+        const groupContacts=contacts.filter(c=>c.group===g);
+        const card=document.createElement('div');card.classList.add('group-card');
+        card.innerHTML=`<div class="group-color" style="background:linear-gradient(45deg,#667eea,#764ba2)"></div>
+        <div class="group-name">${g}</div>
+        <div class="group-count">${groupContacts.length} contacts</div>`;
+        grid.appendChild(card);
+    });
+    document.getElementById('group-count').innerText=groups.length;
+}
 
-/* Card */
-function card(c){
-return`
-<div class="contact-card">
-<button class="fav-btn" onclick="fav(${c.id})">${c.fav?"❤️":"🤍"}</button>
-<b>${c.name}</b><br>${c.phone}<br>
-${c.blood?`<span class="group-tag">🩸${c.blood}</span>`:""}
-<div>
-<button class="action-btn call-btn" onclick="call('${c.phone}','${c.name}')"><i class="fa fa-phone"></i></button>
-<button class="action-btn delete-btn" onclick="del(${c.id})"><i class="fa fa-trash"></i></button>
-</div>
-</div>`}
+// --- FAVORITES ---
+function toggleFav(id,el){
+    const c=contacts.find(c=>c.id===id);c.favorite=!c.favorite;
+    localStorage.setItem('contacts',JSON.stringify(contacts));
+    el.classList.toggle('active');
+    renderFavorites();
+}
 
-/* Actions */
-function fav(id){
-let c=contacts.find(c=>c.id===id);
-c.fav=!c.fav;save()}
-function del(id){
-contacts=contacts.filter(c=>c.id!==id);save()}
-function call(phone,name){
-callHistory.unshift({name,phone,time:new Date().toLocaleString()});
-localStorage.setItem("history",JSON.stringify(callHistory));
-window.open("tel:"+phone)}
+// --- DELETE ---
+function deleteContact(id){
+    if(confirm("Delete this contact?")){
+        contacts=contacts.filter(c=>c.id!==id);
+        localStorage.setItem('contacts',JSON.stringify(contacts));
+        renderAllContacts();renderFavorites();renderGroups();
+    }
+}
+
+// --- CALL / MSG ---
+function callContact(id){
+    const c=contacts.find(c=>c.id===id);
+    const now=new Date();
+    const duration=Math.floor(Math.random()*10+1);
+    c.callHistory.push({timestamp:now.toISOString(),duration});
+    localStorage.setItem('contacts',JSON.stringify(contacts));
+    alert(`Calling ${c.name}...\nDuration: ${duration} mins`);
+    renderCallHistoryPage();
+    renderCallStatsPage();
+}
+
+function msgContact(id){
+    const c=contacts.find(c=>c.id===id);
+    alert(`Messaging ${c.name}...`);
+}
+
+// --- CALL HISTORY ---
+function renderCallHistoryPage(){
+    const container=document.getElementById('call-history-container');container.innerHTML='';
+    contacts.forEach(c=>{
+        c.callHistory.forEach(ch=>{
+            const div=document.createElement('div');
+            div.classList.add('reminder');
+            div.innerText=`${c.name} - ${new Date(ch.timestamp).toLocaleString()} - ${ch.duration} mins`;
+            container.appendChild(div);
+        });
+    });
+}
+
+// --- CALL STATS ---
+function renderCallStatsPage(){
+    const container=document.getElementById('call-stats-container');container.innerHTML='';
+    contacts.forEach(c=>{
+        const total=c.callHistory.reduce((sum,ch)=>sum+ch.duration,0);
+        const div=document.createElement('div');
+        div.classList.add('reminder');
+        div.innerText=`${c.name}: Total Calls ${c.callHistory.length}, Total Duration ${total} mins`;
+        container.appendChild(div);
+    });
+}
+
+// --- SEARCH ---
 function searchContacts(){
-let q=search.value.toLowerCase();
-renderAll(contacts.filter(c=>c.name.toLowerCase().includes(q)))}
+    const q=document.getElementById('search').value.toLowerCase();
+    contacts.forEach((c,i)=>{
+        const card=document.querySelectorAll('#contacts-grid-all .contact-card')[i];
+        if(c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.group.toLowerCase().includes(q)) card.style.display='block';
+        else card.style.display='none';
+    });
+}
 
-/* Modal */
-function openModal(){modal.style.display="flex"}
-function closeModal(){modal.style.display="none"}
-function saveContact(e){
-e.preventDefault();
-contacts.unshift({
-id:Date.now(),
-name:name.value,
-phone:phone.value,
-blood:blood.value,
-group:group.value,
-fav:false});
-save();closeModal()}
-function save(){
-localStorage.setItem("contacts",JSON.stringify(contacts));
-renderAll()}
+// --- REMINDERS ---
+function checkReminders(){contacts.forEach(c=>{if(c.birthday){const today=new Date().toISOString().slice(5,10);if(c.birthday.slice(5,10)===today)alert(`🎉 Today is ${c.name}'s Birthday!`)}})}
+
+// --- VOICE SEARCH ---
+function toggleVoiceSearch(){
+    if(!('webkitSpeechRecognition' in window)){alert('Not supported');return;}
+    recognition = new webkitSpeechRecognition();recognition.lang='en-US';recognition.start();
+    recognition.onresult=function(event){document.getElementById('search').value=event.results[0][0].transcript;searchContacts();}
+}
 </script>
-
 </body>
 </html>
