@@ -4,113 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact Hub 5.0</title>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  font-family:'Segoe UI',sans-serif;
-  background:linear-gradient(135deg,#b60e6d,#764ba2);
-  min-height:100vh;
-}
-button,input{outline:none}
-
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#b60e6d,#764ba2);min-height:100vh;color:#333;}
+button,input{outline:none;}
 /* SPLASH */
-#splash{
-  position:fixed;inset:0;
-  display:flex;flex-direction:column;
-  justify-content:center;align-items:center;
-  background:#1a1a2e;color:white;z-index:1000;
-}
-.enter-btn{
-  padding:15px 40px;border:none;border-radius:30px;
-  background:linear-gradient(45deg,#ff6b6b,#4ecdc4);
-  color:white;font-size:1.2rem;cursor:pointer;
-}
-
+#splash{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#1a1a2e;color:white;z-index:1000;}
+.enter-btn{padding:15px 40px;border:none;border-radius:30px;background:linear-gradient(45deg,#ff6b6b,#4ecdc4);color:white;font-size:1.2rem;cursor:pointer;}
 /* LOGIN */
-#login-page{display:none;min-height:100vh;justify-content:center;align-items:center}
-.login-card{
-  background:white;padding:2rem;border-radius:20px;
-  width:350px;text-align:center;
-}
-.login-card input{
-  width:100%;padding:12px;margin:10px 0;
-  border:2px solid #ddd;border-radius:10px;
-}
-.login-btn{
-  width:100%;padding:12px;border:none;
-  border-radius:10px;
-  background:#667eea;color:white;font-size:1rem;
-}
-
+#login-page{display:none;min-height:100vh;justify-content:center;align-items:center;}
+.login-card{background:white;padding:2rem;border-radius:20px;width:350px;text-align:center;}
+.login-card input{width:100%;padding:12px;margin:10px 0;border:2px solid #ddd;border-radius:10px;}
+.login-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#667eea;color:white;font-size:1rem;cursor:pointer;}
 /* APP */
-#app{display:none}
-.header{
-  background:white;padding:1rem;
-  display:flex;gap:1rem;flex-wrap:wrap
-}
-.tab-btn{
-  border:none;padding:8px 14px;border-radius:10px;
-  cursor:pointer
-}
-.tab-btn.active{background:#667eea;color:white}
-.controls input{padding:8px;border-radius:20px;border:2px solid #667eea}
-
+#app{display:none;}
+.header{background:white;padding:1rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;}
+.tab-btn{border:none;padding:8px 14px;border-radius:10px;cursor:pointer;}
+.tab-btn.active{background:#667eea;color:white;}
+.controls input{padding:8px;border-radius:20px;border:2px solid #667eea;}
 /* PAGES */
-.app-page{display:none;padding:1rem}
-.app-page.active{display:block}
-
+.app-page{display:none;padding:1rem;}
+.app-page.active{display:block;}
 /* CONTACT CARD */
-.contacts-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:1rem
-}
-.contact-card{
-  background:white;border-radius:15px;
-  padding:1rem;position:relative
-}
-.contact-avatar{
-  width:50px;height:50px;border-radius:50%;
-  background:#667eea;color:white;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:bold
-}
-.fav-btn{
-  position:absolute;top:10px;right:10px;
-  border:none;background:none;font-size:1.2rem;cursor:pointer
-}
-.action-btn{
-  border:none;border-radius:50%;
-  width:38px;height:38px;color:white;
-  cursor:pointer;margin:4px
-}
-.call-btn{background:#4ecdc4}
-.msg-btn{background:#f9ca24}
-.edit-btn{background:#667eea}
-.delete-btn{background:#ff6b6b}
-.location-btn{background:#6c5ce7}
-
+.contacts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+.contact-card{background:white;border-radius:15px;padding:1rem;position:relative;}
+.contact-avatar{width:50px;height:50px;border-radius:50%;background:#667eea;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;}
+.fav-btn{position:absolute;top:10px;right:10px;border:none;background:none;font-size:1.2rem;cursor:pointer;}
+.action-btn{border:none;border-radius:50%;width:38px;height:38px;color:white;cursor:pointer;margin:4px;}
+.call-btn{background:#4ecdc4;}
+.msg-btn{background:#f9ca24;}
+.edit-btn{background:#667eea;}
+.delete-btn{background:#ff6b6b;}
+.location-btn{background:#6c5ce7;}
 /* MODAL */
-#modal{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.7);
-  justify-content:center;align-items:center
-}
-.modal-content{
-  background:white;padding:1.5rem;
-  border-radius:15px;width:90%;max-width:450px
-}
-.close{float:right;font-size:1.5rem;cursor:pointer}
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);justify-content:center;align-items:center;}
+.modal-content{background:white;padding:1.5rem;border-radius:15px;width:90%;max-width:450px;}
+.close{float:right;font-size:1.5rem;cursor:pointer;}
 </style>
 </head>
-
 <body>
 
 <!-- SPLASH -->
 <div id="splash">
-  <h1>Contact Hub</h1><br>
+  <h1>Contact Hub</h1>
   <button class="enter-btn" onclick="enterApp()">Enter</button>
 </div>
 
@@ -127,16 +64,15 @@ button,input{outline:none}
 <!-- APP -->
 <div id="app">
   <div class="header">
-    <button class="tab-btn active" onclick="showPage('all',this)">All</button>
+    <button class="tab-btn active" onclick="showPage('all',this)">All Contacts</button>
     <button class="tab-btn" onclick="showPage('favorites',this)">Favorites</button>
-    <input id="search" placeholder="Search" oninput="searchContacts()">
+    <input class="controls" id="search" placeholder="Search" oninput="searchContacts()">
     <button onclick="openModal()">+ Add</button>
   </div>
 
   <div id="page-all" class="app-page active">
     <div class="contacts-grid" id="all-grid"></div>
   </div>
-
   <div id="page-favorites" class="app-page">
     <div class="contacts-grid" id="fav-grid"></div>
   </div>
@@ -158,38 +94,36 @@ let editingId = null;
 
 /* SPLASH */
 function enterApp(){
-  splash.style.display="none";
-  login-page.style.display;"flex";
+  document.getElementById('splash').style.display='none';
+  document.getElementById('login-page').style.display='flex';
 }
 
 /* LOGIN */
 function login(){
-  const u=username.value.trim();
-  const p=password.value.trim();
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
   if(u==="admin" && p==="123"){
-    login-page.style.display;"none";
-    app.style.display="block";
+    document.getElementById('login-page').style.display='none';
+    document.getElementById('app').style.display='block';
     render();
-  }else{
-    alert("Invalid credentials");
-  }
+  } else { alert("Invalid credentials"); }
 }
 
 /* NAV */
-function showPage(p,btn){
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  document.querySelectorAll(".app-page").forEach(p=>p.classList.remove("active"));
-  document.getElementById("page-"+p).classList.add("active");
+function showPage(page,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
 }
 
-/* RENDER */
+/* RENDER CONTACTS */
 function render(){
-  const all=document.getElementById("all-grid");
-  const fav=document.getElementById("fav-grid");
-  all.innerHTML="";fav.innerHTML="";
+  const all = document.getElementById('all-grid');
+  const fav = document.getElementById('fav-grid');
+  all.innerHTML=''; fav.innerHTML='';
   contacts.forEach(c=>{
-    const card=`
+    const card = `
     <div class="contact-card">
       <button class="fav-btn" onclick="toggleFav(${c.id})">${c.favorite?"❤️":"🤍"}</button>
       <div class="contact-avatar">${c.name[0]}</div>
@@ -208,72 +142,66 @@ function render(){
 /* CONTACT CRUD */
 function openModal(id=null){
   editingId=id;
-  modal.style.display="flex";
+  const modalEl = document.getElementById('modal');
+  modalEl.style.display='flex';
+  document.getElementById('name').value='';
+  document.getElementById('phone').value='';
   if(id){
-    const c=contacts.find(c=>c.id===id);
-    name.value=c.name; phone.value=c.phone;
-  }else{
-    name.value=""; phone.value="";
+    const c = contacts.find(c=>c.id===id);
+    document.getElementById('name').value=c.name;
+    document.getElementById('phone').value=c.phone;
   }
 }
-function closeModal(){modal.style.display="none"}
-
+function closeModal(){document.getElementById('modal').style.display='none';}
 function saveContact(){
+  const nameVal=document.getElementById('name').value.trim();
+  const phoneVal=document.getElementById('phone').value.trim();
+  if(!nameVal){alert("Enter name");return;}
   if(editingId){
-    const c=contacts.find(c=>c.id===editingId);
-    c.name=name.value; c.phone=phone.value;
-  }else{
-    contacts.push({
-      id:Date.now(),
-      name:name.value,
-      phone:phone.value,
-      favorite:false,
-      location:null,
-      locationTime:null
-    });
+    const c = contacts.find(c=>c.id===editingId);
+    c.name=nameVal; c.phone=phoneVal;
+  } else {
+    contacts.push({id:Date.now(), name:nameVal, phone:phoneVal, favorite:false, location:null, locationTime:null});
   }
   localStorage.setItem("contacts",JSON.stringify(contacts));
   closeModal(); render();
 }
-
-function editContact(id){openModal(id)}
+function editContact(id){openModal(id);}
 function deleteContact(id){
-  contacts=contacts.filter(c=>c.id!==id);
+  contacts = contacts.filter(c=>c.id!==id);
   localStorage.setItem("contacts",JSON.stringify(contacts));
   render();
 }
 function toggleFav(id){
-  const c=contacts.find(c=>c.id===id);
-  c.favorite=!c.favorite;
+  const c = contacts.find(c=>c.id===id);
+  c.favorite = !c.favorite;
   localStorage.setItem("contacts",JSON.stringify(contacts));
   render();
 }
 
 /* SEARCH */
 function searchContacts(){
-  const q=search.value.toLowerCase();
+  const q = document.getElementById('search').value.toLowerCase();
   document.querySelectorAll(".contact-card").forEach(card=>{
-    card.style.display=card.innerText.toLowerCase().includes(q)?"":"none";
+    card.style.display = card.innerText.toLowerCase().includes(q) ? "" : "none";
   });
 }
 
-/* LOCATION (CORRECT) */
+/* LOCATION (Consent-based) */
 function shareLocation(id){
-  if(!navigator.geolocation){
-    alert("Geolocation not supported");return;
-  }
+  if(!navigator.geolocation){alert("Geolocation not supported"); return;}
   navigator.geolocation.getCurrentPosition(pos=>{
-    const c=contacts.find(c=>c.id===id);
-    c.location={
-      lat:pos.coords.latitude,
-      lng:pos.coords.longitude
-    };
-    c.locationTime=new Date().toLocaleString();
+    const c = contacts.find(c=>c.id===id);
+    c.location = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+    c.locationTime = new Date().toLocaleString();
     localStorage.setItem("contacts",JSON.stringify(contacts));
     alert("Location shared & saved");
     window.open(`https://www.google.com/maps?q=${c.location.lat},${c.location.lng}`);
-  });
+  }, ()=>{alert("Location permission denied");});
 }
+
+/* Placeholder for call/message logging */
+function logAction(type,name){alert(`${type.toUpperCase()} action for ${name}`);}
 </script>
 
 </body>
