@@ -90,8 +90,6 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
 </head>
 <body>
 
-<!-- ========================== EXISTING CODE FROM YOUR FILE ========================== -->
-
 <!-- SPLASH -->
 <div id="splash">
   <div class="title">Contact Hub</div>
@@ -222,276 +220,182 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
 <div id="map-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;z-index:2000;">
   <div style="width:90%;max-width:600px;height:80%;position:relative;">
     <span class="close" onclick="closeMap()" style="position:absolute;top:10px;right:20px;font-size:2rem;color:white;cursor:pointer;">&times;</span>
-    <div id="map" style="width:100%;height:100%;border-radius:15px;"></div>
-  </div>
-</div>
-
-<!-- QR CODE MODAL -->
-<div id="qr-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;z-index:2000;">
-  <div style="width:300px;height:300px;position:relative;background:white;border-radius:15px;padding:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-    <span class="close" onclick="closeQR()" style="position:absolute;top:5px;right:10px;font-size:2rem;color:#333;cursor:pointer;">&times;</span>
-    <canvas id="qr-code"></canvas>
-    <p style="margin-top:10px;font-size:0.9rem;text-align:center;">Scan to get contact info</p>
+    <iframe id="map-frame" width="100%" height="100%" style="border:0;"></iframe>
   </div>
 </div>
 
 <script>
-/* ========================== ORIGINAL SCRIPT ========================== */
-let contacts = [];
-let history = [];
-let privatePIN = "1234";
-let activePage = "all";
-
 /* ---------- SPLASH ---------- */
-function enterApp(){document.getElementById('splash').style.display='none';document.getElementById('login-page').style.display='flex';}
+function enterApp(){
+  document.getElementById('splash').style.display='none';
+  document.getElementById('login-page').style.display='flex';
+}
 
 /* ---------- LOGIN ---------- */
 function login(){
-  let username = document.getElementById('username').value;
-  let password = document.getElementById('password').value;
-  if(username && password){document.getElementById('login-page').style.display='none';document.getElementById('app').style.display='block';renderContacts();}
-  else alert('Enter credentials');
+  let username=document.getElementById('username').value;
+  let password=document.getElementById('password').value;
+  if(username && password){
+    document.getElementById('login-page').style.display='none';
+    document.getElementById('app').style.display='block';
+    renderContacts();
+  } else {alert('Enter credentials');}
 }
 
-/* ---------- MODAL ---------- */
-function openModal(type,id=null){
+/* ---------- CONTACT STORAGE ---------- */
+let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+let history = JSON.parse(localStorage.getItem('history')) || [];
+let privatePIN = localStorage.getItem('privatePIN') || "1234";
+let activePage = "all";
+
+function saveContacts(){localStorage.setItem('contacts',JSON.stringify(contacts));}
+function saveHistory(){localStorage.setItem('history',JSON.stringify(history));}
+function savePrivatePIN(){localStorage.setItem('privatePIN',privatePIN);}
+
+/* ---------- OPEN/CLOSE MODALS ---------- */
+function openModal(mode,id=null){
   document.getElementById('modal').style.display='flex';
-  document.getElementById('modal-title').innerText = type==='add'?'Add Contact':'Edit Contact';
-  if(type==='edit' && id!==null){
-    let c = contacts.find(c=>c.id===id);
-    document.getElementById('name').value=c.name;
-    document.getElementById('phone').value=c.phone;
-    document.getElementById('email').value=c.email;
-    document.getElementById('blood').value=c.blood;
-    document.getElementById('group').value=c.group;
-    document.getElementById('notes').value=c.notes;
-    document.getElementById('latitude').value=c.latitude;
-    document.getElementById('longitude').value=c.longitude;
-  } else {document.getElementById('contact-form').reset();}
+  if(mode==='add'){document.getElementById('modal-title').innerText='Add Contact';document.getElementById('contact-form').reset();}
 }
 function closeModal(){document.getElementById('modal').style.display='none';}
-
-/* ---------- PRIVATE ---------- */
 function showPrivate(){document.getElementById('private-modal').style.display='flex';}
 function closePrivateModal(){document.getElementById('private-modal').style.display='none';}
-function unlockPrivate(){
-  let pin=document.getElementById('private-pin').value;
-  if(pin===privatePIN){document.getElementById('private-modal').style.display='none';showPage('private');}
-  else alert('Incorrect PIN');
-}
-function changePrivatePin(){privatePIN=prompt("Enter new PIN:");alert("PIN changed successfully");}
 
-/* ---------- VOICE SEARCH ---------- */
-let recognition;
-function toggleVoiceSearch(){
-  const btn=document.getElementById('voice-btn');
-  if(!('webkitSpeechRecognition' in window)){alert('Voice not supported');return;}
-  if(!recognition){
-    recognition = new webkitSpeechRecognition();
-    recognition.continuous=false;
-    recognition.lang='en-US';
-    recognition.interimResults=false;
-    recognition.onresult=(e)=>{document.getElementById('search').value=e.results[0][0].transcript;searchContacts();}
-  }
-  btn.classList.toggle('active');
-  if(btn.classList.contains('active')) recognition.start(); else recognition.stop();
+/* ---------- CONTACT FUNCTIONS ---------- */
+document.getElementById('contact-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  let id = Date.now();
+  let c = {
+    id:id,
+    name:document.getElementById('name').value,
+    phone:document.getElementById('phone').value,
+    email:document.getElementById('email').value,
+    blood:document.getElementById('blood').value,
+    group:document.getElementById('group').value,
+    notes:document.getElementById('notes').value,
+    latitude:document.getElementById('latitude').value,
+    longitude:document.getElementById('longitude').value,
+    favorite:false,
+    private:document.getElementById('private').checked,
+    emergency:document.getElementById('emergency').checked
+  };
+  contacts.push(c);
+  saveContacts();
+  closeModal();
+  renderContacts();
+});
+
+/* ---------- DELETE ---------- */
+function deleteContact(id){
+  contacts = contacts.filter(c=>c.id!==id);
+  saveContacts();
+  renderContacts();
 }
 
-/* ---------- CONTACTS ---------- */
+/* ---------- CALL / MESSAGE ---------- */
+function callContact(phone){
+  history.push({type:'call',phone:phone,time:new Date().toLocaleString()});
+  saveHistory();
+  window.location.href = `tel:${phone}`;
+}
+function msgContact(phone){
+  history.push({type:'sms',phone:phone,time:new Date().toLocaleString()});
+  saveHistory();
+  window.location.href = `sms:${phone}`;
+}
+
+/* ---------- FAVORITE ---------- */
+function toggleFavorite(id){
+  let c=contacts.find(c=>c.id===id); c.favorite=!c.favorite; saveContacts(); renderContacts();
+}
+
+/* ---------- RENDER CONTACTS ---------- */
 function renderContacts(){
-  const allGrid=document.getElementById('contacts-grid-all');allGrid.innerHTML='';
-  const favGrid=document.getElementById('contacts-grid-fav');favGrid.innerHTML='';
-  const privateGrid=document.getElementById('contacts-grid-private');privateGrid.innerHTML='';
+  const allGrid=document.getElementById('contacts-grid-all');
+  const favGrid=document.getElementById('contacts-grid-fav');
+  const privateGrid=document.getElementById('contacts-grid-private');
+  allGrid.innerHTML=''; favGrid.innerHTML=''; privateGrid.innerHTML='';
   contacts.forEach(c=>{
-    const card=document.createElement('div');card.className='contact-card';
-    card.innerHTML=`
-      <div class="contact-avatar">${c.name[0]}</div>
+    let card=document.createElement('div'); card.className='contact-card';
+    card.innerHTML=`<div class="contact-avatar">👤</div>
       <div class="contact-name">${c.name}</div>
-      <div class="contact-phone">${c.phone}</div>
-      <div class="contact-email">${c.email}</div>
-      <div class="contact-blood">${c.blood}</div>
-      <div class="contact-group">${c.group}</div>
+      <div class="contact-phone">📞 ${c.phone}</div>
+      <div class="contact-email">✉️ ${c.email}</div>
+      <div class="contact-blood">🩸 ${c.blood}</div>
+      <div class="contact-group">👥 ${c.group}</div>
       <div class="contact-actions">
         <button class="action-btn call-btn" onclick="callContact('${c.phone}')"><i class="fas fa-phone"></i></button>
         <button class="action-btn msg-btn" onclick="msgContact('${c.phone}')"><i class="fas fa-comment"></i></button>
-        <button class="action-btn edit-btn" onclick="openModal('edit',${c.id})"><i class="fas fa-edit"></i></button>
         <button class="action-btn delete-btn" onclick="deleteContact(${c.id})"><i class="fas fa-trash"></i></button>
-        <button class="action-btn location-btn" onclick="showLocation(${c.id})"><i class="fas fa-map-marker-alt"></i></button>
-        <button class="action-btn" onclick="shareContact(${c.id})"><i class="fas fa-qrcode"></i></button>
-      </div>`;
+      </div>
+      <button class="fav-btn ${c.favorite?'active':''}" onclick="toggleFavorite(${c.id})"><i class="fas fa-heart"></i></button>`;
     allGrid.appendChild(card);
     if(c.favorite) favGrid.appendChild(card.cloneNode(true));
     if(c.private) privateGrid.appendChild(card.cloneNode(true));
   });
-}
-
-/* ---------- PAGE SWITCH ---------- */
-function showPage(page){
-  document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelector('.tab-btn[onclick*="'+page+'"]').classList.add('active');
-  activePage=page;
+  document.getElementById('all-count').innerText=contacts.length;
+  document.getElementById('fav-count').innerText=contacts.filter(c=>c.favorite).length;
+  document.getElementById('private-count').innerText=contacts.filter(c=>c.private).length;
 }
 
 /* ---------- SEARCH ---------- */
 function searchContacts(){
-  let term=document.getElementById('search').value.toLowerCase();
-  document.querySelectorAll('.contact-card').forEach(c=>{
-    c.style.display=c.innerText.toLowerCase().includes(term)?'block':'none';
+  let query=document.getElementById('search').value.toLowerCase();
+  document.querySelectorAll('.contact-card').forEach(card=>{
+    if(card.innerText.toLowerCase().includes(query)){card.style.display='block';}else{card.style.display='none';}
   });
 }
 
-/* ---------- CALL / MESSAGE ---------- */
-function callContact(phone){alert('Calling '+phone);}
-function msgContact(phone){alert('Messaging '+phone);}
+/* ---------- PRIVATE PIN ---------- */
+function unlockPrivate(){
+  let pin=document.getElementById('private-pin').value;
+  if(pin===privatePIN){document.getElementById('private-modal').style.display='none'; showPage('private');}else{alert('Incorrect PIN');}
+}
+function changePrivatePin(){let newPin=prompt('Enter new PIN:'); if(newPin){privatePIN=newPin; savePrivatePIN(); alert('PIN changed');}}
+
+/* ---------- PAGE NAV ---------- */
+function showPage(page){
+  document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.remove('active'));
+  document.querySelector(`.tab-btn[onclick="showPage('${page}')"]`).classList.add('active');
+}
 
 /* ---------- LOCATION ---------- */
 function getCurrentLocation(){
   if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(pos=>{
-      document.getElementById('latitude').value=pos.coords.latitude;
-      document.getElementById('longitude').value=pos.coords.longitude;
-      alert('Location captured successfully!');
-    },()=>alert('Permission denied'));
-  } else alert('Geolocation not supported');
+    navigator.geolocation.getCurrentPosition(p=>{
+      document.getElementById('latitude').value=p.coords.latitude;
+      document.getElementById('longitude').value=p.coords.longitude;
+      alert('Location captured!');
+    });
+  }else{alert('Geolocation not supported');}
 }
-function showLocation(id){
-  const c = contacts.find(c=>c.id===id);
+
+/* ---------- MAP ---------- */
+function openMap(lat,long){
   document.getElementById('map-modal').style.display='flex';
-  document.getElementById('map').innerHTML=`<iframe src="https://maps.google.com/maps?q=${c.latitude},${c.longitude}&z=15&output=embed" style="width:100%;height:100%;border:none;border-radius:15px;"></iframe>`;
+  document.getElementById('map-frame').src=`https://maps.google.com/maps?q=${lat},${long}&z=15&output=embed`;
 }
 function closeMap(){document.getElementById('map-modal').style.display='none';}
 
-/* ---------- QR CODE ---------- */
-function shareContact(id){
-  const c = contacts.find(c=>c.id===id);
-  const contactData = `Name: ${c.name}\nPhone: ${c.phone}\nEmail: ${c.email}\nBlood Group: ${c.blood}\nGroup: ${c.group}\nNotes: ${c.notes}`;
-  const qr = new QRious({element: document.getElementById('qr-code'),value:contactData,size:250});
-  document.getElementById('qr-modal').style.display='flex';
-}
-function closeQR(){document.getElementById('qr-modal').style.display='none';}
-
-/* ---------- CONTACT FORM ---------- */
-document.getElementById('contact-form').addEventListener('submit',function(e){
-  e.preventDefault();
-  let id = Date.now();
-  let c={id:id,
-         name:document.getElementById('name').value,
-         phone:document.getElementById('phone').value,
-         email:document.getElementById('email').value,
-         blood:document.getElementById('blood').value,
-         group:document.getElementById('group').value,
-         notes:document.getElementById('notes').value,
-         latitude:document.getElementById('latitude').value,
-         longitude:document.getElementById('longitude').value,
-         favorite:false,
-         private:document.getElementById('private').checked,
-         emergency:document.getElementById('emergency').checked};
-  contacts.push(c);closeModal();renderContacts();
-});
-
-function deleteContact(id){contacts=contacts.filter(c=>c.id!==id);renderContacts();}
-
-function previewAvatar(){
-  const file=document.getElementById('avatar').files[0];
-  if(file){
-    const reader=new FileReader();
-    reader.onload=e=>document.getElementById('avatar-preview').innerHTML=`<img src="${e.target.result}" style="width:60px;height:60px;border-radius:50%">`;
-    reader.readAsDataURL(file);
-  }
+/* ---------- VOICE SEARCH ---------- */
+let recognition,voiceActive=false;
+function toggleVoiceSearch(){
+  if(!('webkitSpeechRecognition' in window)){alert('Voice search not supported');return;}
+  if(!recognition){recognition=new webkitSpeechRecognition(); recognition.continuous=false; recognition.interimResults=false; recognition.lang='en-US'; recognition.onresult=e=>{document.getElementById('search').value=e.results[0][0].transcript; searchContacts();};}
+  if(!voiceActive){recognition.start();voiceActive=true;document.getElementById('voice-btn').classList.add('active');}
+  else{recognition.stop();voiceActive=false;document.getElementById('voice-btn').classList.remove('active');}
 }
 
-/* ========================== VIDEO & GROUP CALL ========================== */
-let localStream;
-let videoCallModal;
-function startVideoCall(phone) {
-    alert('Starting video call with ' + phone);
-    
-    if (!videoCallModal) {
-        videoCallModal = document.createElement('div');
-        videoCallModal.id = 'video-call-modal';
-        videoCallModal.style.cssText = `
-            position:fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.9); display:flex; justify-content:center; align-items:center;
-            z-index:3000; flex-direction:column;
-        `;
-        videoCallModal.innerHTML = `
-            <span onclick="closeVideoCall()" style="position:absolute;top:10px;right:20px;font-size:2rem;color:white;cursor:pointer;">&times;</span>
-            <video id="local-video" autoplay muted style="width:45%;margin:10px;background:#333;border-radius:10px;"></video>
-            <video id="remote-video" autoplay style="width:45%;margin:10px;background:#333;border-radius:10px;"></video>
-        `;
-        document.body.appendChild(videoCallModal);
-    }
-
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(stream => {
-            localStream = stream;
-            document.getElementById('local-video').srcObject = stream;
-        })
-        .catch(err => alert('Camera/Microphone access denied: ' + err));
+/* ---------- CHART ---------- */
+function renderHistoryChart(){
+  const ctx=document.getElementById('chart').getContext('2d');
+  const callCount=history.filter(h=>h.type==='call').length;
+  const smsCount=history.filter(h=>h.type==='sms').length;
+  new Chart(ctx,{type:'doughnut',data:{labels:['Calls','SMS'],datasets:[{data:[callCount,smsCount],backgroundColor:['#4ecdc4','#f9ca24']}]},options:{responsive:true}});
 }
-
-function closeVideoCall() {
-    if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-        localStream = null;
-    }
-    if (videoCallModal) {
-        videoCallModal.remove();
-        videoCallModal = null;
-    }
-}
-
-function startGroupCall() {
-    alert('Starting group video call with all contacts in this group!');
-    
-    if (!videoCallModal) {
-        videoCallModal = document.createElement('div');
-        videoCallModal.id = 'video-call-modal';
-        videoCallModal.style.cssText = `
-            position:fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.9); display:flex; justify-content:center; align-items:center;
-            z-index:3000; flex-wrap:wrap; overflow-y:auto; padding:20px;
-        `;
-        videoCallModal.innerHTML = `<span onclick="closeVideoCall()" style="position:absolute;top:10px;right:20px;font-size:2rem;color:white;cursor:pointer;">&times;</span>`;
-        document.body.appendChild(videoCallModal);
-    }
-
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(stream => {
-            localStream = stream;
-            const localVideo = document.createElement('video');
-            localVideo.srcObject = stream;
-            localVideo.autoplay = true;
-            localVideo.muted = true;
-            localVideo.style.cssText = "width:30%;margin:10px;background:#333;border-radius:10px;";
-            videoCallModal.appendChild(localVideo);
-        })
-        .catch(err => alert('Camera/Microphone access denied: ' + err));
-}
-
-function addVideoButtons() {
-    document.querySelectorAll('.contact-card').forEach(card => {
-        if (!card.querySelector('.video-btn')) {
-            const phone = card.querySelector('.contact-phone').innerText;
-            const btn = document.createElement('button');
-            btn.className = 'action-btn video-btn';
-            btn.style.background = '#764ba2';
-            btn.style.color = 'white';
-            btn.innerHTML = '<i class="fas fa-video"></i>';
-            btn.title = 'Video Call';
-            btn.onclick = () => startVideoCall(phone);
-            card.querySelector('.contact-actions').appendChild(btn);
-        }
-    });
-}
-
-const observer = new MutationObserver(addVideoButtons);
-observer.observe(document.getElementById('contacts-grid-all'), { childList: true, subtree: true });
-observer.observe(document.getElementById('contacts-grid-fav'), { childList: true, subtree: true });
-observer.observe(document.getElementById('contacts-grid-private'), { childList: true, subtree: true });
-observer.observe(document.getElementById('contacts-grid-groups'), { childList: true, subtree: true });
+window.addEventListener('load',()=>{renderHistoryChart(); renderContacts();});
 </script>
 </body>
 </html>
