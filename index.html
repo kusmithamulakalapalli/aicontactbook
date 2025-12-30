@@ -17,7 +17,6 @@ a{text-decoration:none;color:inherit;}
 #splash{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;z-index:1000;}
 #splash .title{font-size:4rem;color:#4ecdc4;text-shadow:0 0 20px #4ecdc4;animation:glow 2s infinite;margin-bottom:1rem;}
 @keyframes glow{0%,100%{text-shadow:0 0 20px #4ecdc4;}50%{text-shadow:0 0 40px #ff6b6b;}}
-
 .enter-btn{background:linear-gradient(45deg,#ff6b6b,#4ecdc4);color:white;border:none;padding:15px 40px;font-size:1.2rem;border-radius:50px;cursor:pointer;box-shadow:0 10px 30px rgba(255,107,107,0.4);transition:all 0.3s ease;animation:bounce 2s infinite;}
 .enter-btn:hover{transform:scale(1.05);box-shadow:0 15px 40px rgba(255,107,107,0.6);}
 @keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-5px);}}
@@ -65,6 +64,7 @@ input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
 .edit-btn{background:#667eea;color:white;}
 .delete-btn{background:#ff6b6b;color:white;}
 .location-btn{background:#ff6b6b;color:white;}
+.block-btn{background:#999;color:white;}
 .fav-btn{position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#ffd700;}
 .fav-btn.active{color:#ff6b6b;animation:heartBeat 0.3s;}
 @keyframes heartBeat{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
@@ -113,6 +113,7 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
       <button class="tab-btn" onclick="showPage('favorites')"><i class="fas fa-heart"></i> Favorites</button>
       <button class="tab-btn" onclick="showPage('groups')"><i class="fas fa-users"></i> Groups</button>
       <button class="tab-btn" onclick="showPrivate()"><i class="fas fa-lock"></i> Private Contacts</button>
+      <button class="tab-btn" onclick="showPage('blocked')"><i class="fas fa-ban"></i> Blocked Contacts</button>
       <button class="tab-btn" onclick="showPage('emergency')"><i class="fas fa-ambulance"></i> Emergency Contacts</button>
       <button class="tab-btn" onclick="showPage('history')"><i class="fas fa-history"></i> History</button>
     </div>
@@ -145,6 +146,12 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
   <div id="page-private" class="app-page">
     <div class="page-title"><h2>Private Contacts (<span id="private-count">0</span>)</h2></div>
     <div class="contacts-grid" id="contacts-grid-private"></div>
+  </div>
+
+  <!-- BLOCKED CONTACTS -->
+  <div id="page-blocked" class="app-page">
+    <div class="page-title"><h2>Blocked Contacts (<span id="blocked-count">0</span>)</h2></div>
+    <div class="contacts-grid" id="contacts-grid-blocked"></div>
   </div>
 
   <!-- EMERGENCY CONTACTS -->
@@ -204,30 +211,27 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
 </div>
 
 <script>
-// ---------- DATA ----------
 let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
 let history = JSON.parse(localStorage.getItem('history')) || [];
 let editingId = null;
 let recognition = null;
+const PRIVATE_PIN = "1234";
 
-// ---------- SPLASH ----------
 function enterApp(){
     document.getElementById('splash').style.display='none';
     document.getElementById('login-page').style.display='flex';
 }
 
-// ---------- LOGIN ----------
 function login(){
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
     if(username === "admin" && password === "123"){
         document.getElementById('login-page').style.display='none';
         document.getElementById('app').style.display='block';
-        renderAll(); renderFavorites(); renderGroups(); renderEmergency();
+        renderAll(); renderFavorites(); renderGroups(); renderEmergency(); renderBlocked();
     } else { alert("Invalid username or password!"); }
 }
 
-// ---------- TAB NAV ----------
 function showPage(page){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   event.target.classList.add('active');
@@ -235,8 +239,6 @@ function showPage(page){
   document.getElementById('page-'+page).classList.add('active');
 }
 
-// ---------- PRIVATE CONTACTS PIN ----------
-const PRIVATE_PIN = "1234";
 function showPrivate(){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector('button[onclick="showPrivate()"]').classList.add('active');
@@ -258,23 +260,24 @@ function closePrivateModal(){
 
 // ---------- RENDER FUNCTIONS ----------
 function renderAll(){
-  renderGrid('contacts-grid-all',contacts.filter(c=>!c.private));
-  document.getElementById('all-count').innerText=contacts.filter(c=>!c.private).length;
+  renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && !c.blocked));
+  document.getElementById('all-count').innerText=contacts.filter(c=>!c.private && !c.blocked).length;
 }
 function renderFavorites(){
-  renderGrid('contacts-grid-fav',contacts.filter(c=>c.favorite && !c.private));
-  document.getElementById('fav-count').innerText=contacts.filter(c=>c.favorite && !c.private).length;
+  renderGrid('contacts-grid-fav',contacts.filter(c=>c.favorite && !c.private && !c.blocked));
+  document.getElementById('fav-count').innerText=contacts.filter(c=>c.favorite && !c.private && !c.blocked).length;
 }
 function renderGroups(){
   let groups={};
-  contacts.filter(c=>!c.private).forEach(c=>{let g=c.group||'Uncategorized';if(!groups[g]) groups[g]=[];groups[g].push(c);});
+  contacts.filter(c=>!c.private && !c.blocked).forEach(c=>{let g=c.group||'Uncategorized';if(!groups[g]) groups[g]=[];groups[g].push(c);});
   let html='';
   Object.entries(groups).forEach(([g,list])=>{html+=`<div class="contact-card" onclick="filterGroup('${g}')"><b>${g}</b><div>${list.length} contacts</div></div>`;});
   document.getElementById('contacts-grid-groups').innerHTML=html;
   document.getElementById('group-count').innerText=Object.keys(groups).length;
 }
 function renderPrivate(){renderGrid('contacts-grid-private',contacts.filter(c=>c.private));document.getElementById('private-count').innerText=contacts.filter(c=>c.private).length;}
-function renderEmergency(){renderGrid('contacts-grid-emergency',contacts.filter(c=>c.emergency));document.getElementById('emergency-count').innerText=contacts.filter(c=>c.emergency).length;}
+function renderBlocked(){renderGrid('contacts-grid-blocked',contacts.filter(c=>c.blocked));document.getElementById('blocked-count').innerText=contacts.filter(c=>c.blocked).length;}
+function renderEmergency(){renderGrid('contacts-grid-emergency',contacts.filter(c=>c.emergency && !c.blocked));document.getElementById('emergency-count').innerText=contacts.filter(c=>c.emergency && !c.blocked).length;}
 
 function renderGrid(gridId,data){
   const grid=document.getElementById(gridId);grid.innerHTML='';
@@ -293,13 +296,15 @@ function renderGrid(gridId,data){
         <button class="action-btn edit-btn" onclick="editContact(${c.id})"><i class="fas fa-edit"></i></button>
         <button class="action-btn delete-btn" onclick="deleteContact(${c.id})"><i class="fas fa-trash"></i></button>
         <button class="action-btn location-btn" onclick="trackLocation(${c.id})"><i class="fas fa-map-marker-alt"></i></button>
+        <button class="action-btn block-btn" onclick="toggleBlock(${c.id})">${c.blocked?'<i class="fas fa-unlock"></i>':'<i class="fas fa-ban"></i>'}</button>
       </div>
     </div>`;
   });
 }
 
-// ---------- FAVORITE ----------
-function toggleFav(id){let c=contacts.find(c=>c.id===id);c.favorite=!c.favorite;saveContacts();renderAll();renderFavorites();renderGroups();renderPrivate();renderEmergency();}
+// ---------- FAVORITE / BLOCK ----------
+function toggleFav(id){let c=contacts.find(c=>c.id===id);c.favorite=!c.favorite;saveContacts();renderAll();renderFavorites();renderGroups();renderPrivate();renderBlocked();renderEmergency();}
+function toggleBlock(id){let c=contacts.find(c=>c.id===id);c.blocked=!c.blocked;saveContacts();renderAll();renderFavorites();renderGroups();renderPrivate();renderBlocked();renderEmergency();}
 
 // ---------- ADD / EDIT ----------
 function openModal(type,id=null){
@@ -338,14 +343,14 @@ function saveContact(){
     notes:document.getElementById('notes').value,
     emergency:document.getElementById('emergency').checked,
     private:document.getElementById('private').checked,
+    blocked: false, // new
     avatar:document.getElementById('avatar-preview').querySelector('img')?document.getElementById('avatar-preview').querySelector('img').src:''
   };
   if(editingId){let index=contacts.findIndex(x=>x.id===editingId);contacts[index]=c;}else{contacts.push(c);}
-  saveContacts();
-  renderAll();renderFavorites();renderGroups();renderPrivate();renderEmergency();
+  saveContacts(); renderAll();renderFavorites();renderGroups();renderPrivate();renderBlocked();renderEmergency();
 }
 function editContact(id){openModal('edit',id);}
-function deleteContact(id){if(confirm('Delete this contact?')){contacts=contacts.filter(c=>c.id!==id);saveContacts();renderAll();renderFavorites();renderGroups();renderPrivate();renderEmergency();}}
+function deleteContact(id){if(confirm('Delete this contact?')){contacts=contacts.filter(c=>c.id!==id);saveContacts();renderAll();renderFavorites();renderGroups();renderPrivate();renderBlocked();renderEmergency();}}
 
 // ---------- LOCAL STORAGE ----------
 function saveContacts(){localStorage.setItem('contacts',JSON.stringify(contacts));}
@@ -353,11 +358,11 @@ function saveContacts(){localStorage.setItem('contacts',JSON.stringify(contacts)
 // ---------- SEARCH ----------
 function searchContacts(){
   let q=document.getElementById('search').value.toLowerCase();
-  renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && (c.name.toLowerCase().includes(q) || c.phone.includes(q))));
+  renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && !c.blocked && (c.name.toLowerCase().includes(q) || c.phone.includes(q))));
 }
 
 // ---------- GROUP FILTER ----------
-function filterGroup(g){renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && c.group===g));showPage('all');}
+function filterGroup(g){renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && !c.blocked && c.group===g));showPage('all');}
 
 // ---------- LOCATION ----------
 function trackLocation(id){
