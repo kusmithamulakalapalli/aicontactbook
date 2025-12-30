@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-box">
+    <h2>Login</h2><br>
+    <input id="user" placeholder="Username"><br><br>
+    <input id="pass" type="password" placeholder="Password"><br><br>
+    <button onclick="login()">Login</button>
+  </div>
+</section>
+
+<script>
+function login(){
+  localStorage.user = user.value;
+  window.location.href="app.html";
+}
+</script>
+
+</body>
+</html>

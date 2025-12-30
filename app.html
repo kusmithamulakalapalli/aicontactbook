@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Contact Hub</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header>
+  <h2>Contact Hub</h2>
+  <input id="search" placeholder="Search contacts">
+  <button onclick="voice()">🎤</button>
+</header>
+
+<section class="add">
+  <input id="name" placeholder="Name">
+  <input id="phone" placeholder="Phone">
+  <select id="group">
+    <option>Family</option>
+    <option>Friends</option>
+    <option>Work</option>
+  </select>
+  <select id="blood">
+    <option>O+</option>
+    <option>O-</option>
+    <option>A+</option>
+    <option>B+</option>
+  </select>
+  <button onclick="add()">Add Contact</button>
+</section>
+
+<div id="list"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
