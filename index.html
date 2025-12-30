@@ -1,27 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Contact Hub</title>
-<link rel="stylesheet" href="css/main.css">
+  <meta charset="UTF-8">
+  <title>Contact Hub</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="presentation">
 
-<nav class="navbar">
-  <h2>ContactHub</h2>
-  <button onclick="go()">Enter</button>
-</nav>
+<div class="presentation-container">
+  <h1>Welcome to Contact Hub</h1>
+  <p class="subtitle">
+    Smart Contact Management with Security & Tracking
+  </p>
 
-<section class="hero">
-  <div class="hero-box">
-    <h1>CONTACT HUB</h1>
-    <p>Smart • Secure • Modern</p>
-    <button onclick="go()">GET STARTED</button>
+  <div class="card-container">
+    <div class="glass-card" onclick="goNext()">
+      <h2>Contact Hub</h2>
+      <p>Calls, messages, reminders, blood groups, favorites</p>
+    </div>
+
+    <div class="glass-card" onclick="goNext()">
+      <h2>Secure Access</h2>
+      <p>Login, private contacts, restore & statistics</p>
+    </div>
   </div>
-</section>
+
+  <button class="enter-btn" onclick="goNext()">ENTER</button>
+</div>
 
 <script>
-function go(){
-  window.location.href="login.html";
+function goNext() {
+  window.location.href = "login.html";
 }
 </script>
 

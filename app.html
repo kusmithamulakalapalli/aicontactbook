@@ -1,36 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Contact Hub</title>
-<link rel="stylesheet" href="css/app.css">
+  <title>Contact Hub App</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header>
-  <h2>Contact Hub</h2>
-  <input id="search" placeholder="Search contacts">
-  <button onclick="voice()">🎤</button>
+<header class="top-bar">
+  <h2>📇 Contact Hub</h2>
+  <input id="search" placeholder="Search contacts..." onkeyup="searchContact()">
+  <button onclick="voiceSearch()">🎤</button>
 </header>
 
-<section class="add">
-  <input id="name" placeholder="Name">
-  <input id="phone" placeholder="Phone">
-  <select id="group">
-    <option>Family</option>
-    <option>Friends</option>
-    <option>Work</option>
-  </select>
-  <select id="blood">
-    <option>O+</option>
-    <option>O-</option>
-    <option>A+</option>
-    <option>B+</option>
-  </select>
-  <button onclick="add()">Add Contact</button>
-</section>
+<nav class="menu">
+  <button onclick="openForm()">➕ Add</button>
+  <button onclick="showFavorites()">⭐ Favorites</button>
+  <button onclick="showCallHistory()">📞 History</button>
+  <button onclick="showReminders()">⏰ Reminders</button>
+  <button onclick="togglePrivate()">🔒 Privacy</button>
+  <button onclick="showTrash()">🗑 Trash</button>
+</nav>
 
-<div id="list"></div>
+<div id="contactList"></div>
 
-<script src="js/app.js"></script>
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <input id="name" placeholder="Name">
+    <input id="phone" placeholder="Phone">
+    <input id="birthday" type="date">
+    <select id="blood">
+      <option>O+</option><option>O-</option>
+      <option>A+</option><option>A-</option>
+      <option>B+</option><option>B-</option>
+      <option>AB+</option><option>AB-</option>
+    </select>
+    <input id="group" placeholder="Group (Family/Class)">
+    <button onclick="saveContact()">Save</button>
+    <button onclick="closeForm()">Close</button>
+  </div>
+</div>
+
+<script src="js/contacts.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/callHistory.js"></script>
+<script src="js/reminders.js"></script>
+<script src="js/privacy.js"></script>
 </body>
 </html>

@@ -1,26 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login</title>
-<link rel="stylesheet" href="css/main.css">
+  <title>Login | Contact Hub</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="presentation">
 
-<section class="hero">
-  <div class="hero-box">
-    <h2>Login</h2><br>
-    <input id="user" placeholder="Username"><br><br>
-    <input id="pass" type="password" placeholder="Password"><br><br>
-    <button onclick="login()">Login</button>
-  </div>
-</section>
+<div class="glass-card login-card">
+  <h2>Login</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button class="enter-btn" onclick="login()">Login</button>
+</div>
 
-<script>
-function login(){
-  localStorage.user = user.value;
-  window.location.href="app.html";
-}
-</script>
-
+<script src="js/auth.js"></script>
 </body>
 </html>
