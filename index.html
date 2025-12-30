@@ -2,203 +2,338 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Contact Hub – Location Sharing Fixed</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Hub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-body{font-family:Arial;margin:0;background:#f4f6f9}
-header{background:#111;color:#fff;padding:12px;text-align:center}
-section{padding:15px}
-button{padding:8px 12px;margin:4px;cursor:pointer}
-input{padding:8px;margin:5px;width:90%}
-#map{width:100%;height:300px;display:none;margin-top:10px}
-.card{background:#fff;padding:10px;margin:8px 0;border-radius:6px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+font-family:Segoe UI,Arial;
+background:linear-gradient(135deg,#b60e6d,#764ba2);
+min-height:100vh;color:#333}
+
+/* SPLASH */
+#splash{
+position:fixed;inset:0;
+background:#111;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+color:white;
+z-index:999}
+#splash h1{font-size:3rem;color:#4ecdc4}
+#splash button{
+margin-top:20px;
+padding:15px 40px;
+border:none;border-radius:30px;
+font-size:1.1rem;
+background:linear-gradient(45deg,#ff6b6b,#4ecdc4);
+color:white;cursor:pointer}
+
+/* LOGIN */
+#loginPage{
+display:none;height:100vh;
+justify-content:center;
+align-items:center}
+.login-card{
+background:white;padding:30px;
+border-radius:20px;width:320px;
+text-align:center}
+.login-card input{
+width:100%;padding:12px;
+margin:10px 0;border-radius:10px;
+border:1px solid #ccc}
+.login-card button{
+width:100%;padding:12px;
+background:#667eea;color:white;
+border:none;border-radius:10px;
+cursor:pointer}
+
+/* APP */
+#app{display:none}
+.header{
+background:white;
+padding:10px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+align-items:center}
+.nav-tabs button{
+padding:8px 14px;
+border:none;border-radius:10px;
+cursor:pointer}
+.nav-tabs .active{
+background:#667eea;color:white}
+.controls input{
+padding:8px 15px;
+border-radius:20px;
+border:1px solid #ccc}
+.controls button{
+padding:8px 15px;
+border-radius:20px;
+border:none;background:#4ecdc4;
+color:white;cursor:pointer}
+
+.page{display:none;padding:20px}
+.page.active{display:block}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+gap:15px}
+
+/* CONTACT CARD */
+.card{
+background:white;padding:15px;
+border-radius:15px;position:relative}
+.avatar{
+width:60px;height:60px;
+border-radius:50%;
+background:#667eea;color:white;
+display:flex;align-items:center;
+justify-content:center;
+font-size:1.4rem;margin-bottom:5px}
+.actions{
+display:flex;gap:8px;
+margin-top:10px}
+.actions button{
+width:40px;height:40px;
+border:none;border-radius:50%;
+color:white;cursor:pointer}
+.call{background:#4ecdc4}
+.msg{background:#f9ca24}
+.loc{background:#ff6b6b}
+.edit{background:#667eea}
+.del{background:#999}
+.fav{
+position:absolute;top:10px;right:10px;
+background:none;border:none;
+font-size:1.3rem;color:#ffd700;
+cursor:pointer}
+
+/* MODAL */
+.modal{
+display:none;position:fixed;inset:0;
+background:rgba(0,0,0,0.7);
+justify-content:center;align-items:center;
+z-index:999}
+.modal-box{
+background:white;padding:20px;
+border-radius:15px;
+width:90%;max-width:420px}
+.modal-box input,select{
+width:100%;padding:10px;
+margin:8px 0;border-radius:10px;
+border:1px solid #ccc}
+.close{
+float:right;font-size:22px;
+cursor:pointer}
 </style>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-<!-- Google Maps -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_KEY"></script>
 </head>
 
 <body>
 
-<header>📍 Contact Hub – Location Sharing</header>
+<!-- SPLASH -->
+<div id="splash">
+<h1>Contact Hub</h1>
+<button onclick="enterApp()">Enter</button>
+</div>
 
 <!-- LOGIN -->
-<section id="loginPage">
-  <h3>Login</h3>
-  <input id="username" placeholder="Username">
-  <input id="password" placeholder="Password" type="password">
-  <button onclick="login()">Login</button>
-</section>
+<div id="loginPage">
+<div class="login-card">
+<h2>Login</h2>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+</div>
 
 <!-- APP -->
-<section id="app" style="display:none">
-  <h3>Welcome <span id="userLabel"></span></h3>
+<div id="app">
+<div class="header">
+<div class="nav-tabs">
+<button class="active" onclick="showPage('all')">All</button>
+<button onclick="showPage('fav')">Favorites</button>
+<button onclick="openPrivate()">Private</button>
+</div>
+<div class="controls">
+<input id="search" placeholder="Search" oninput="renderAll()">
+<button onclick="openModal()">Add</button>
+</div>
+</div>
 
-  <div class="card">
-    <h4>Contact ID to Track</h4>
-    <input id="contactIdInput" placeholder="user_contactname">
-    <button onclick="sendLocationRequest()">Request Location</button>
-  </div>
+<div id="all" class="page active"><div class="grid" id="gridAll"></div></div>
+<div id="fav" class="page"><div class="grid" id="gridFav"></div></div>
+<div id="private" class="page"><div class="grid" id="gridPrivate"></div></div>
+</div>
 
-  <div class="card">
-    <button onclick="stopSharing()">Stop Sharing My Location</button>
-  </div>
+<!-- ADD / EDIT -->
+<div class="modal" id="modal">
+<div class="modal-box">
+<span class="close" onclick="closeModal()">×</span>
+<h3 id="modalTitle">Add Contact</h3>
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<select id="blood">
+<option value="">Blood Group</option>
+<option>A+</option><option>A-</option>
+<option>B+</option><option>B-</option>
+<option>AB+</option><option>AB-</option>
+<option>O+</option><option>O-</option>
+</select>
+<label><input type="checkbox" id="isPrivate"> Private</label>
+<button onclick="saveContact()">Save</button>
+</div>
+</div>
 
-  <div id="map"></div>
-</section>
+<!-- PRIVATE PIN -->
+<div class="modal" id="pinModal">
+<div class="modal-box">
+<span class="close" onclick="closePin()">×</span>
+<h3>Enter PIN</h3>
+<input id="pin">
+<button onclick="unlockPrivate()">Unlock</button>
+</div>
+</div>
 
 <script>
-/* ================= FIREBASE CONFIG ================= */
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+let contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+let editId = null;
+let PRIVATE_PIN = localStorage.getItem("pin") || "1234";
 
-/* ================= GLOBALS ================= */
-let myUserId = null;
-let watchId = null;
-let map, marker;
-
-/* ================= LOGIN ================= */
+/* FLOW */
+function enterApp(){
+document.getElementById("splash").style.display="none";
+document.getElementById("loginPage").style.display="flex";
+}
 function login(){
-  const u = username.value.trim();
-  const p = password.value.trim();
-
-  if(u && p){
-    myUserId = "user_" + u;
-    loginPage.style.display="none";
-    app.style.display="block";
-    userLabel.textContent = u;
-    listenForRequests();
-    askNotificationPermission();
-  }else{
-    alert("Enter credentials");
-  }
+if(user.value==="admin" && pass.value==="123"){
+loginPage.style.display="none";
+app.style.display="block";
+renderAll();renderFav();
+}else alert("Invalid login");
 }
 
-/* ================= NOTIFICATIONS ================= */
-function askNotificationPermission(){
-  if("Notification" in window && Notification.permission!=="granted"){
-    Notification.requestPermission();
-  }
-}
-function notify(title,msg){
-  if(Notification.permission==="granted"){
-    new Notification(title,{body:msg});
-  }
+/* NAV */
+function showPage(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 }
 
-/* ================= SEND REQUEST ================= */
-function sendLocationRequest(){
-  const contactId = contactIdInput.value.trim();
-  if(!contactId){ alert("Enter contact ID"); return; }
+/* MODAL */
+function openModal(id){
+modal.style.display="flex";
+editId=id||null;
+modalTitle.innerText=id?"Edit Contact":"Add Contact";
+if(id){
+let c=contacts.find(x=>x.id===id);
+name.value=c.name;
+phone.value=c.phone;
+email.value=c.email;
+blood.value=c.blood;
+isPrivate.checked=c.private;
+}else{
+name.value=phone.value=email.value="";
+blood.value="";isPrivate.checked=false;
+}
+}
+function closeModal(){modal.style.display="none"}
 
-  const reqId = myUserId + "_" + contactId + "_" + Date.now();
+/* SAVE */
+function saveContact(){
+let obj={
+id:editId||Date.now(),
+name:name.value,
+phone:phone.value,
+email:email.value,
+blood:blood.value,
+private:isPrivate.checked,
+favorite:false,
+location:editId?contacts.find(x=>x.id===editId).location:null
+};
+if(editId){
+contacts=contacts.map(x=>x.id===editId?obj:x);
+}else contacts.push(obj);
 
-  db.ref("locationRequests/"+reqId).set({
-    from: myUserId,
-    to: contactId,
-    status:"pending"
-  });
-
-  alert("Location request sent");
-
-  db.ref("locationRequests/"+reqId).on("value",snap=>{
-    const d = snap.val();
-    if(!d) return;
-    if(d.status==="accepted"){
-      notify("Accepted","Contact shared location");
-      trackContact(contactId);
-    }
-    if(d.status==="declined"){
-      alert("Request declined");
-    }
-  });
+localStorage.setItem("contacts",JSON.stringify(contacts));
+closeModal();renderAll();renderFav();
 }
 
-/* ================= RECEIVE REQUEST ================= */
-function listenForRequests(){
-  db.ref("locationRequests").on("child_added",snap=>{
-    const r = snap.val();
-    if(!r || r.to!==myUserId || r.status!=="pending") return;
-
-    notify("Location Request", r.from+" wants your location");
-
-    const ok = confirm(r.from+" wants your live location. Allow?");
-    if(ok){
-      snap.ref.update({status:"accepted"});
-      startSharing();
-    }else{
-      snap.ref.update({status:"declined"});
-    }
-  });
+/* CARD */
+function card(c){
+return `<div class="card">
+<div class="avatar">${c.name[0]}</div>
+<b>${c.name}</b><br>
+📞 ${c.phone}<br>
+${c.location?`📍 <a target="_blank"
+href="https://maps.google.com?q=${c.location.lat},${c.location.lng}">
+View Location</a><br>`:""}
+<div class="actions">
+<button class="call" onclick="alert('Calling')">📞</button>
+<button class="msg" onclick="alert('Messaging')">💬</button>
+<button class="loc" onclick="shareLocation(${c.id})">📍</button>
+<button class="edit" onclick="openModal(${c.id})">✏️</button>
+<button class="del" onclick="remove(${c.id})">🗑</button>
+</div>
+<button class="fav" onclick="fav(${c.id})">❤</button>
+</div>`;
 }
 
-/* ================= SHARE LOCATION ================= */
-function startSharing(){
-  if(!navigator.geolocation){
-    alert("Geolocation not supported");
-    return;
-  }
-
-  watchId = navigator.geolocation.watchPosition(pos=>{
-    db.ref("liveLocations/"+myUserId).set({
-      lat:pos.coords.latitude,
-      lng:pos.coords.longitude,
-      time:Date.now()
-    });
-  },{
-    enableHighAccuracy:true
-  });
-
-  alert("Location sharing started");
+/* RENDER */
+function renderAll(){
+gridAll.innerHTML="";
+let q=search.value.toLowerCase();
+contacts.filter(c=>!c.private && c.name.toLowerCase().includes(q))
+.forEach(c=>gridAll.innerHTML+=card(c));
+}
+function renderFav(){
+gridFav.innerHTML="";
+contacts.filter(c=>c.favorite)
+.forEach(c=>gridFav.innerHTML+=card(c));
+}
+function renderPrivate(){
+gridPrivate.innerHTML="";
+contacts.filter(c=>c.private)
+.forEach(c=>gridPrivate.innerHTML+=card(c));
 }
 
-/* ================= STOP SHARING ================= */
-function stopSharing(){
-  if(watchId){
-    navigator.geolocation.clearWatch(watchId);
-    watchId=null;
-    alert("Location sharing stopped");
-  }
+/* ACTIONS */
+function remove(id){
+contacts=contacts.filter(c=>c.id!==id);
+localStorage.setItem("contacts",JSON.stringify(contacts));
+renderAll();renderFav();
+}
+function fav(id){
+contacts=contacts.map(c=>c.id===id?{...c,favorite:!c.favorite}:c);
+localStorage.setItem("contacts",JSON.stringify(contacts));
+renderAll();renderFav();
 }
 
-/* ================= TRACK CONTACT ================= */
-function trackContact(contactId){
-  mapDiv = document.getElementById("map");
-  mapDiv.style.display="block";
+/* LOCATION */
+function shareLocation(id){
+if(!navigator.geolocation){alert("Not supported");return;}
+navigator.geolocation.getCurrentPosition(pos=>{
+contacts=contacts.map(c=>
+c.id===id?{...c,location:{
+lat:pos.coords.latitude,
+lng:pos.coords.longitude}}:c);
+localStorage.setItem("contacts",JSON.stringify(contacts));
+alert("Location shared");
+renderAll();renderFav();
+},()=>alert("Permission denied"));
+}
 
-  if(!map){
-    map = new google.maps.Map(mapDiv,{
-      zoom:15,
-      center:{lat:0,lng:0}
-    });
-  }
-
-  db.ref("liveLocations/"+contactId).on("value",snap=>{
-    const loc = snap.val();
-    if(!loc) return;
-
-    const p = {lat:loc.lat,lng:loc.lng};
-    if(!marker){
-      marker = new google.maps.Marker({map,position:p});
-    }else{
-      marker.setPosition(p);
-    }
-    map.setCenter(p);
-  });
+/* PRIVATE */
+function openPrivate(){pinModal.style.display="flex"}
+function closePin(){pinModal.style.display="none"}
+function unlockPrivate(){
+if(pin.value===PRIVATE_PIN){
+closePin();showPage("private");renderPrivate();
+}else alert("Wrong PIN");
 }
 </script>
 
