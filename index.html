@@ -90,6 +90,8 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
 </head>
 <body>
 
+<!-- ========================== EXISTING CODE FROM YOUR FILE ========================== -->
+
 <!-- SPLASH -->
 <div id="splash">
   <div class="title">Contact Hub</div>
@@ -234,6 +236,7 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
 </div>
 
 <script>
+/* ========================== ORIGINAL SCRIPT ========================== */
 let contacts = [];
 let history = [];
 let privatePIN = "1234";
@@ -399,6 +402,96 @@ function previewAvatar(){
   }
 }
 
+/* ========================== VIDEO & GROUP CALL ========================== */
+let localStream;
+let videoCallModal;
+function startVideoCall(phone) {
+    alert('Starting video call with ' + phone);
+    
+    if (!videoCallModal) {
+        videoCallModal = document.createElement('div');
+        videoCallModal.id = 'video-call-modal';
+        videoCallModal.style.cssText = `
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.9); display:flex; justify-content:center; align-items:center;
+            z-index:3000; flex-direction:column;
+        `;
+        videoCallModal.innerHTML = `
+            <span onclick="closeVideoCall()" style="position:absolute;top:10px;right:20px;font-size:2rem;color:white;cursor:pointer;">&times;</span>
+            <video id="local-video" autoplay muted style="width:45%;margin:10px;background:#333;border-radius:10px;"></video>
+            <video id="remote-video" autoplay style="width:45%;margin:10px;background:#333;border-radius:10px;"></video>
+        `;
+        document.body.appendChild(videoCallModal);
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(stream => {
+            localStream = stream;
+            document.getElementById('local-video').srcObject = stream;
+        })
+        .catch(err => alert('Camera/Microphone access denied: ' + err));
+}
+
+function closeVideoCall() {
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+    }
+    if (videoCallModal) {
+        videoCallModal.remove();
+        videoCallModal = null;
+    }
+}
+
+function startGroupCall() {
+    alert('Starting group video call with all contacts in this group!');
+    
+    if (!videoCallModal) {
+        videoCallModal = document.createElement('div');
+        videoCallModal.id = 'video-call-modal';
+        videoCallModal.style.cssText = `
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.9); display:flex; justify-content:center; align-items:center;
+            z-index:3000; flex-wrap:wrap; overflow-y:auto; padding:20px;
+        `;
+        videoCallModal.innerHTML = `<span onclick="closeVideoCall()" style="position:absolute;top:10px;right:20px;font-size:2rem;color:white;cursor:pointer;">&times;</span>`;
+        document.body.appendChild(videoCallModal);
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(stream => {
+            localStream = stream;
+            const localVideo = document.createElement('video');
+            localVideo.srcObject = stream;
+            localVideo.autoplay = true;
+            localVideo.muted = true;
+            localVideo.style.cssText = "width:30%;margin:10px;background:#333;border-radius:10px;";
+            videoCallModal.appendChild(localVideo);
+        })
+        .catch(err => alert('Camera/Microphone access denied: ' + err));
+}
+
+function addVideoButtons() {
+    document.querySelectorAll('.contact-card').forEach(card => {
+        if (!card.querySelector('.video-btn')) {
+            const phone = card.querySelector('.contact-phone').innerText;
+            const btn = document.createElement('button');
+            btn.className = 'action-btn video-btn';
+            btn.style.background = '#764ba2';
+            btn.style.color = 'white';
+            btn.innerHTML = '<i class="fas fa-video"></i>';
+            btn.title = 'Video Call';
+            btn.onclick = () => startVideoCall(phone);
+            card.querySelector('.contact-actions').appendChild(btn);
+        }
+    });
+}
+
+const observer = new MutationObserver(addVideoButtons);
+observer.observe(document.getElementById('contacts-grid-all'), { childList: true, subtree: true });
+observer.observe(document.getElementById('contacts-grid-fav'), { childList: true, subtree: true });
+observer.observe(document.getElementById('contacts-grid-private'), { childList: true, subtree: true });
+observer.observe(document.getElementById('contacts-grid-groups'), { childList: true, subtree: true });
 </script>
 </body>
 </html>
