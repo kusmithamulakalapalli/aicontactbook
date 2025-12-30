@@ -20,7 +20,6 @@
 body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#b60e6d 0%,#764ba2 100%);color:#333;min-height:100vh;}
 button, input, select, textarea {outline:none;}
 a{text-decoration:none;color:inherit;}
-
 /* ---------- SPLASH ---------- */
 #splash{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;z-index:1000;}
 #splash .title{font-size:4rem;color:#4ecdc4;text-shadow:0 0 20px #4ecdc4;animation:glow 2s infinite;margin-bottom:1rem;}
@@ -28,7 +27,6 @@ a{text-decoration:none;color:inherit;}
 .enter-btn{background:linear-gradient(45deg,#ff6b6b,#4ecdc4);color:white;border:none;padding:15px 40px;font-size:1.2rem;border-radius:50px;cursor:pointer;box-shadow:0 10px 30px rgba(255,107,107,0.4);transition:all 0.3s ease;animation:bounce 2s infinite;}
 .enter-btn:hover{transform:scale(1.05);box-shadow:0 15px 40px rgba(255,107,107,0.6);}
 @keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-5px);}}
-
 /* ---------- LOGIN ---------- */
 #login-page{display:none;min-height:100vh;justify-content:center;align-items:center;padding:2rem;}
 .login-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);padding:3rem;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:100%;max-width:400px;text-align:center;}
@@ -37,7 +35,6 @@ input{width:100%;padding:15px;margin:1rem 0;border:2px solid #eee;border-radius:
 input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
 .login-btn{background:linear-gradient(45deg,#667eea,#764ba2);color:white;border:none;padding:15px;width:100%;border-radius:10px;font-size:1.1rem;cursor:pointer;transition:transform 0.3s;font-weight:600;}
 .login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(102,126,234,0.4);}
-
 /* ---------- HEADER ---------- */
 #app{display:none;min-height:100vh;}
 .header{padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 2px 20px rgba(0,0,0,0.1);}
@@ -51,13 +48,11 @@ input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
 #voice-btn.active{background:#ff6b6b;color:white;border-color:#ff6b6b;}
 #add-contact{background:linear-gradient(45deg,#4ecdc4,#44a08d);color:white;border:none;padding:10px 16px;border-radius:25px;cursor:pointer;font-size:0.9rem;font-weight:500;transition:all 0.3s;}
 #add-contact:hover{transform:scale(1.05);}
-
 /* ---------- APP PAGES ---------- */
 .app-page{display:none;padding:1rem 1.5rem;min-height:calc(100vh - 130px);}
 .app-page.active{display:block;}
 .page-title{padding:1rem 0;border-bottom:2px solid rgba(255,255,255,0.1);margin-bottom:1rem;color:white;}
 .page-title h2{font-size:1.6rem;display:flex;align-items:center;gap:0.5rem;}
-
 /* ---------- CONTACT CARD ---------- */
 .contacts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
 .contact-card{background:rgba(255,255,255,0.95);border-radius:15px;padding:1rem;box-shadow:0 10px 40px rgba(0,0,0,0.1);position:relative;overflow:hidden;transition:0.3s;}
@@ -85,14 +80,11 @@ input[type=file]{padding:5px;}
 textarea{width:100%;padding:8px;border-radius:10px;border:2px solid #eee;margin-top:0.3rem;}
 select#blood {width: 100%; padding: 15px; margin: 1rem 0; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; transition: border 0.3s;}
 select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1);}
-
 /* ---------- HISTORY ---------- */
 #history-grid{display:grid;grid-template-columns:1fr;gap:0.5rem;}
 .history-card{background:#fff3cd;padding:0.5rem 1rem;border-radius:10px;font-size:0.9rem;color:#333;}
-
 /* ---------- MAP ---------- */
 #map{width:100%;height:300px;margin-top:1rem;display:none;}
-
 /* ---------- RESPONSIVE ---------- */
 @media(max-width:768px){.contacts-grid{grid-template-columns:1fr;}.header{flex-direction:column;gap:1rem;}.nav-tabs{order:3;width:100%;justify-content:center;}.controls{order:2;width:100%;justify-content:center;}}
 </style>
@@ -245,6 +237,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// ---------- REQUEST NOTIFICATION PERMISSION ----------
+if ("Notification" in window && Notification.permission === "default") {
+  Notification.requestPermission().then(permission => console.log("Notification permission:", permission));
+}
+
 // ---------- SPLASH & LOGIN ----------
 function enterApp(){ document.getElementById('splash').style.display='none'; document.getElementById('login-page').style.display='flex'; }
 function login(){ 
@@ -322,11 +319,7 @@ document.getElementById('contact-form').addEventListener('submit',function(e){
 });
 
 // ---------- RENDER FUNCTIONS ----------
-function renderAll(){
-  const grid=document.getElementById('contacts-grid-all');grid.innerHTML='';
-  contacts.forEach(c=>{grid.innerHTML+=contactCard(c);});
-  document.getElementById('all-count').innerText=contacts.length;
-}
+function renderAll(){const grid=document.getElementById('contacts-grid-all');grid.innerHTML='';contacts.forEach(c=>{grid.innerHTML+=contactCard(c);});document.getElementById('all-count').innerText=contacts.length;}
 function renderFavorites(){const grid=document.getElementById('contacts-grid-fav');grid.innerHTML='';contacts.filter(c=>c.favorite).forEach(c=>{grid.innerHTML+=contactCard(c);});document.getElementById('fav-count').innerText=contacts.filter(c=>c.favorite).length;}
 function renderGroups(){const grid=document.getElementById('contacts-grid-groups');grid.innerHTML='';contacts.forEach(c=>{if(c.group)grid.innerHTML+=contactCard(c);});document.getElementById('group-count').innerText=contacts.filter(c=>c.group).length;}
 function renderBlocked(){const grid=document.getElementById('contacts-grid-blocked');grid.innerHTML='';contacts.filter(c=>c.blocked).forEach(c=>{grid.innerHTML+=contactCard(c);});document.getElementById('blocked-count').innerText=contacts.filter(c=>c.blocked).length;}
@@ -370,23 +363,49 @@ function closePrivateModal(){document.getElementById('private-modal').style.disp
 function unlockPrivate(){const pin=document.getElementById('private-pin').value;if(pin===PRIVATE_PIN){closePrivateModal();renderPrivate();showPage('private');}else{alert("Incorrect PIN!");}}
 function changePrivatePin(){let oldPin=prompt("Enter current PIN:");if(oldPin!==PRIVATE_PIN){alert("Incorrect current PIN!");return;}let newPin=prompt("Enter new PIN (4-6 digits):");if(!newPin||newPin.length<4||newPin.length>6){alert("Invalid PIN length!");return;}let confirmPin=prompt("Confirm new PIN:");if(newPin!==confirmPin){alert("PINs do not match!");return;}PRIVATE_PIN=newPin;localStorage.setItem('privatePin',PRIVATE_PIN);alert("Private PIN changed successfully!");}
 
-// ---------- LOCATION TRACKING ----------
+// ---------- LOCATION TRACKING & PUSH NOTIFICATIONS ----------
 function initMap(){map=new google.maps.Map(document.getElementById('map'),{zoom:15});}
+
 function requestLocation(contactId){
-  db.ref('location_requests/'+contactId).set({from:'me',status:'pending'});
+  db.ref('location_requests/'+contactId).set({from:'Me',status:'pending'});
   alert('Location request sent. Waiting for acceptance...');
-}
-function listenRequests(myId){
-  db.ref('location_requests/'+myId).on('value',snapshot=>{
-    const req=snapshot.val();
-    if(req && req.status==='pending'){
-      if(confirm(`Allow ${req.from} to track your location?`)){
-        db.ref('location_requests/'+myId).update({status:'accepted'});
-        startSharingLocation(myId);
-      } else {db.ref('location_requests/'+myId).update({status:'declined'});}
+  // Listen for status change
+  db.ref('location_requests/'+contactId).on('value', snapshot => {
+    const status = snapshot.val()?.status;
+    if(status === 'accepted'){
+      if("Notification" in window && Notification.permission==="granted"){
+        new Notification("Location Access Granted",{body:`Contact accepted your location request.`});
+      }
+      trackContact(contactId);
+    } else if(status==='declined'){
+      alert(`Contact declined your location request.`);
     }
   });
 }
+
+function listenRequests(myId){
+  db.ref('location_requests/'+myId).on('value', snapshot => {
+    const req = snapshot.val();
+    if(req && req.status === 'pending'){
+      // Browser notification
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("Location Request", {
+          body: `${req.from} wants to track your location.`,
+          icon: "https://cdn-icons-png.flaticon.com/512/684/684908.png"
+        });
+      }
+
+      // Ask user to accept/decline
+      if(confirm(`${req.from} wants to track your location. Allow?`)){
+        db.ref('location_requests/'+myId).update({status:'accepted'});
+        startSharingLocation(myId);
+      } else {
+        db.ref('location_requests/'+myId).update({status:'declined'});
+      }
+    }
+  });
+}
+
 function startSharingLocation(userId){
   if(navigator.geolocation){
     navigator.geolocation.watchPosition(pos=>{
@@ -395,6 +414,7 @@ function startSharingLocation(userId){
     },err=>console.error(err),{enableHighAccuracy:true,maximumAge:5000});
   } else alert("Geolocation not supported");
 }
+
 function trackContact(contactId){
   document.getElementById('map').style.display='block';
   if(!map) initMap();
