@@ -5,24 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact Hub 5.0</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <style>
 /* ---------- GENERAL ---------- */
-* {margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#b60e6d 0%,#764ba2 100%);color:#333;min-height:100vh;}
-button, input, select, textarea {outline:none;}
+button,input,select,textarea{outline:none;}
 a{text-decoration:none;color:inherit;}
-
 /* ---------- SPLASH ---------- */
 #splash{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;z-index:1000;}
 #splash .title{font-size:4rem;color:#4ecdc4;text-shadow:0 0 20px #4ecdc4;animation:glow 2s infinite;margin-bottom:1rem;}
 @keyframes glow{0%,100%{text-shadow:0 0 20px #4ecdc4;}50%{text-shadow:0 0 40px #ff6b6b;}}
-
 .enter-btn{background:linear-gradient(45deg,#ff6b6b,#4ecdc4);color:white;border:none;padding:15px 40px;font-size:1.2rem;border-radius:50px;cursor:pointer;box-shadow:0 10px 30px rgba(255,107,107,0.4);transition:all 0.3s ease;animation:bounce 2s infinite;}
 .enter-btn:hover{transform:scale(1.05);box-shadow:0 15px 40px rgba(255,107,107,0.6);}
 @keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-5px);}}
-
 /* ---------- LOGIN ---------- */
 #login-page{display:none;min-height:100vh;justify-content:center;align-items:center;padding:2rem;}
 .login-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);padding:3rem;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:100%;max-width:400px;text-align:center;}
@@ -31,7 +27,6 @@ input{width:100%;padding:15px;margin:1rem 0;border:2px solid #eee;border-radius:
 input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
 .login-btn{background:linear-gradient(45deg,#667eea,#764ba2);color:white;border:none;padding:15px;width:100%;border-radius:10px;font-size:1.1rem;cursor:pointer;transition:transform 0.3s;font-weight:600;}
 .login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(102,126,234,0.4);}
-
 /* ---------- HEADER ---------- */
 #app{display:none;min-height:100vh;}
 .header{padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 2px 20px rgba(0,0,0,0.1);}
@@ -45,14 +40,12 @@ input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
 #voice-btn.active{background:#ff6b6b;color:white;border-color:#ff6b6b;}
 #add-contact{background:linear-gradient(45deg,#4ecdc4,#44a08d);color:white;border:none;padding:10px 16px;border-radius:25px;cursor:pointer;font-size:0.9rem;font-weight:500;transition:all 0.3s;}
 #add-contact:hover{transform:scale(1.05);}
-#logout-btn{background:#ff6b6b;color:white;border:none;padding:10px 16px;border-radius:25px;cursor:pointer;font-size:0.9rem;font-weight:500;transition:all 0.3s;}
-
+#logout-btn{background:linear-gradient(45deg,#ff6b6b,#ff4757);color:white;border:none;padding:10px 16px;border-radius:25px;cursor:pointer;font-size:0.9rem;}
 /* ---------- APP PAGES ---------- */
 .app-page{display:none;padding:1rem 1.5rem;min-height:calc(100vh - 130px);}
 .app-page.active{display:block;}
 .page-title{padding:1rem 0;border-bottom:2px solid rgba(255,255,255,0.1);margin-bottom:1rem;color:white;}
 .page-title h2{font-size:1.6rem;display:flex;align-items:center;gap:0.5rem;}
-
 /* ---------- CONTACT CARD ---------- */
 .contacts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
 .contact-card{background:rgba(255,255,255,0.95);border-radius:15px;padding:1rem;box-shadow:0 10px 40px rgba(0,0,0,0.1);position:relative;overflow:hidden;transition:0.3s;}
@@ -67,38 +60,30 @@ input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
 .edit-btn{background:#667eea;color:white;}
 .delete-btn{background:#ff6b6b;color:white;}
 .location-btn{background:#ff6b6b;color:white;}
-.block-btn{background:#999;color:white;}
 .fav-btn{position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#ffd700;}
 .fav-btn.active{color:#ff6b6b;animation:heartBeat 0.3s;}
 @keyframes heartBeat{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
-
 /* ---------- MODAL ---------- */
-#modal,#private-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center;}
+#modal,#private-modal,#map-modal,#qr-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center;}
 .modal-content{background:white;padding:1.5rem;border-radius:15px;width:90%;max-width:500px;max-height:80vh;overflow-y:auto;position:relative;}
 .close{position:absolute;top:10px;right:20px;font-size:1.8rem;cursor:pointer;color:#999;}
-input[type=file]{padding:5px;}
 textarea{width:100%;padding:8px;border-radius:10px;border:2px solid #eee;margin-top:0.3rem;}
 select#blood {width: 100%; padding: 15px; margin: 1rem 0; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; transition: border 0.3s;}
 select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1);}
-
-/* ---------- HISTORY ---------- */
-#history-grid{display:grid;grid-template-columns:1fr;gap:0.5rem;}
-.history-card{background:#fff3cd;padding:0.5rem 1rem;border-radius:10px;font-size:0.9rem;color:#333;}
-
-/* ---------- RESPONSIVE ---------- */
-@media(max-width:768px){.contacts-grid{grid-template-columns:1fr;}.header{flex-direction:column;gap:1rem;}.nav-tabs{order:3;width:100%;justify-content:center;}.controls{order:2;width:100%;justify-content:center;}}
+#map{width:100%;height:300px;border-radius:10px;margin-top:1rem;}
+#qr-code{display:flex;justify-content:center;margin-top:1rem;}
 </style>
 </head>
 <body>
 
-<!-- ========================== SPLASH ========================== -->
+<!-- SPLASH -->
 <div id="splash">
   <div class="title">Contact Hub</div>
   <div class="subtitle">Your Smart Contact Manager</div>
   <button class="enter-btn" onclick="enterApp()"><i class="fas fa-arrow-right"></i> Enter</button>
 </div>
 
-<!-- ========================== LOGIN ========================== -->
+<!-- LOGIN -->
 <div id="login-page">
   <div class="login-card">
     <h2><i class="fas fa-lock"></i> Welcome Back</h2>
@@ -108,7 +93,7 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
   </div>
 </div>
 
-<!-- ========================== APP ========================== -->
+<!-- APP -->
 <div id="app">
   <div class="header">
     <div class="nav-tabs">
@@ -118,7 +103,6 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
       <button class="tab-btn" onclick="showPrivate()"><i class="fas fa-lock"></i> Private Contacts</button>
       <button class="tab-btn" onclick="showPage('blocked')"><i class="fas fa-ban"></i> Blocked Contacts</button>
       <button class="tab-btn" onclick="showPage('emergency')"><i class="fas fa-ambulance"></i> Emergency Contacts</button>
-      <button class="tab-btn" onclick="showPage('history')"><i class="fas fa-history"></i> History</button>
     </div>
     <div class="controls">
       <input type="text" id="search" placeholder="🔍 Search contacts..." oninput="searchContacts()">
@@ -128,105 +112,117 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
     </div>
   </div>
 
-  <!-- ALL CONTACTS PAGE -->
+  <!-- PAGES -->
   <div id="page-all" class="app-page active">
     <div class="page-title"><h2>All Contacts (<span id="all-count">0</span>)</h2></div>
     <div class="contacts-grid" id="contacts-grid-all"></div>
   </div>
-
-  <!-- FAVORITES PAGE -->
   <div id="page-favorites" class="app-page">
     <div class="page-title"><h2>Favorites (<span id="fav-count">0</span>)</h2></div>
     <div class="contacts-grid" id="contacts-grid-fav"></div>
   </div>
-
-  <!-- GROUPS PAGE -->
   <div id="page-groups" class="app-page">
     <div class="page-title"><h2>Groups (<span id="group-count">0</span>)</h2></div>
     <div class="contacts-grid" id="contacts-grid-groups"></div>
   </div>
+</div>
 
-  <!-- PRIVATE PAGE -->
-  <div id="page-private" class="app-page">
-    <div class="page-title"><h2>Private Contacts (<span id="private-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-private"></div>
-  </div>
-
-  <!-- BLOCKED PAGE -->
-  <div id="page-blocked" class="app-page">
-    <div class="page-title"><h2>Blocked Contacts (<span id="blocked-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-blocked"></div>
-  </div>
-
-  <!-- EMERGENCY PAGE -->
-  <div id="page-emergency" class="app-page">
-    <div class="page-title"><h2>Emergency Contacts (<span id="emergency-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-emergency"></div>
-  </div>
-
-  <!-- HISTORY PAGE -->
-  <div id="page-history" class="app-page">
-    <div class="page-title"><h2>Call / Message History (<span id="history-count">0</span>)</h2></div>
-    <div id="history-grid"></div>
-    <canvas id="chart" style="margin-top:1rem;"></canvas>
+<!-- ADD/EDIT CONTACT MODAL -->
+<div id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 id="modal-title">Add Contact</h3>
+    <input type="text" id="c-name" placeholder="Name">
+    <input type="text" id="c-phone" placeholder="Phone">
+    <input type="email" id="c-email" placeholder="Email">
+    <select id="blood">
+      <option value="">Select Blood Group</option>
+      <option value="A+">A+</option><option value="A-">A-</option>
+      <option value="B+">B+</option><option value="B-">B-</option>
+      <option value="O+">O+</option><option value="O-">O-</option>
+      <option value="AB+">AB+</option><option value="AB-">AB-</option>
+    </select>
+    <input type="text" id="c-group" placeholder="Group">
+    <button onclick="saveContact()">Save Contact</button>
+    <button onclick="showMapModal()">Set Location</button>
+    <button onclick="showQRModal()">Generate QR</button>
   </div>
 </div>
 
-<!-- ========================== MODALS ========================== -->
-<!-- Contact Modal, Private Modal, Map Modal, QR Modal -->
-<!-- Keep your existing modals unchanged -->
+<!-- MAP MODAL -->
+<div id="map-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeMapModal()">&times;</span>
+    <h3>Set Contact Location</h3>
+    <div id="map"></div>
+    <button onclick="saveLocation()">Save Location</button>
+  </div>
+</div>
 
+<!-- QR MODAL -->
+<div id="qr-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeQRModal()">&times;</span>
+    <h3>Contact QR Code</h3>
+    <canvas id="qr-code"></canvas>
+  </div>
+</div>
 
 <script>
-/* ========================== SCRIPT ========================== */
-let contacts = [];
-let history = [];
-let privatePIN = "1234";
-let activePage = "all";
-let currentUser = null;
+// ================== JS ==================
+let users=JSON.parse(localStorage.getItem('users'))||[{id:'u1',username:'admin',password:'admin123',contacts:[]}];
+let currentUser=JSON.parse(localStorage.getItem('currentUser'))||null;
+let contacts=currentUser?currentUser.contacts:[];
 
-/* ---------- SPLASH ---------- */
+let activePage="all",editIndex=null;
+
 function enterApp(){document.getElementById('splash').style.display='none';document.getElementById('login-page').style.display='flex';}
+function login(){let u=document.getElementById('username').value;let p=document.getElementById('password').value;if(!u||!p){alert('Enter credentials');return;}let user=users.find(x=>x.username===u && x.password===p);if(user){currentUser=user;contacts=currentUser.contacts;localStorage.setItem('currentUser',JSON.stringify(currentUser));document.getElementById('login-page').style.display='none';document.getElementById('app').style.display='block';renderContacts();}else{alert('Invalid credentials');}}
+function logout(){if(confirm('Logout?')){currentUser=null;localStorage.removeItem('currentUser');document.getElementById('app').style.display='none';document.getElementById('login-page').style.display='flex';}}
+function saveCurrentUser(){let idx=users.findIndex(u=>u.id===currentUser.id);if(idx!==-1){users[idx]=currentUser;localStorage.setItem('users',JSON.stringify(users));}}
 
-/* ---------- LOGIN ---------- */
-function login(){
-  let username = document.getElementById('username').value.trim();
-  let password = document.getElementById('password').value.trim();
-  if(username && password){
-    currentUser = username;
-    localStorage.setItem('currentUser', currentUser);
-    const savedContacts = JSON.parse(localStorage.getItem('contacts_' + currentUser)) || [];
-    contacts = savedContacts;
-    document.getElementById('login-page').style.display='none';
-    document.getElementById('app').style.display='block';
-    renderContacts();
-  } else alert('Enter credentials');
-}
+function showPage(page){document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page)?.classList.add('active');document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));document.querySelector(`.tab-btn[onclick="showPage('${page}')"]`)?.classList.add('active');activePage=page;}
 
-/* ---------- LOGOUT ---------- */
-function logout(){
-  currentUser = null;
-  localStorage.removeItem('currentUser');
-  contacts = [];
-  renderContacts();
-  document.getElementById('app').style.display='none';
-  document.getElementById('login-page').style.display='flex';
-}
+function openModal(type,idx){editIndex=idx||null;document.getElementById('modal-title').innerText=type==='add'?'Add Contact':'Edit Contact';if(editIndex!==null){let c=contacts[editIndex];document.getElementById('c-name').value=c.name;document.getElementById('c-phone').value=c.phone;document.getElementById('c-email').value=c.email;document.getElementById('blood').value=c.blood;document.getElementById('c-group').value=c.group;}else{document.getElementById('c-name').value='';document.getElementById('c-phone').value='';document.getElementById('c-email').value='';document.getElementById('blood').value='';document.getElementById('c-group').value='';}document.getElementById('modal').style.display='flex';}
+function closeModal(){document.getElementById('modal').style.display='none';}
+function saveContact(){let name=document.getElementById('c-name').value,phone=document.getElementById('c-phone').value,email=document.getElementById('c-email').value,blood=document.getElementById('blood').value,group=document.getElementById('c-group').value;if(!name||!phone){alert('Name & phone required');return;}if(editIndex!==null){Object.assign(contacts[editIndex],{name,phone,email,blood,group});}else{contacts.push({name,phone,email,blood,group,favorite:false,private:false,location:null});}currentUser.contacts=contacts;saveCurrentUser();renderContacts();closeModal();}
 
-/* ---------- AUTO-LOGIN ---------- */
-window.addEventListener('load', () => {
-  const savedUser = localStorage.getItem('currentUser');
-  if(savedUser){
-    currentUser = savedUser;
-    contacts = JSON.parse(localStorage.getItem('contacts_' + currentUser)) || [];
-    document.getElementById('login-page').style.display='none';
-    document.getElementById('app').style.display='block';
-    renderContacts();
-  }
-});
+function renderContacts(){let allGrid=document.getElementById('contacts-grid-all');allGrid.innerHTML='';contacts.forEach((c,idx)=>{let card=document.createElement('div');card.className='contact-card';card.innerHTML=`<div class="contact-avatar">${c.name.charAt(0).toUpperCase()}</div>
+<div class="contact-name">${c.name}</div>
+<div class="contact-phone"><i class="fas fa-phone"></i> ${c.phone}</div>
+<div class="contact-email"><i class="fas fa-envelope"></i> ${c.email}</div>
+<div class="contact-blood">Blood: ${c.blood}</div>
+<div class="contact-group">Group: ${c.group}</div>
+<div class="contact-actions">
+<button class="action-btn call-btn" onclick="callContact('${c.phone}')"><i class="fas fa-phone"></i></button>
+<button class="action-btn msg-btn" onclick="msgContact('${c.phone}')"><i class="fas fa-comment"></i></button>
+<button class="action-btn edit-btn" onclick="openModal('edit',${idx})"><i class="fas fa-edit"></i></button>
+<button class="action-btn delete-btn" onclick="deleteContact(${idx})"><i class="fas fa-trash"></i></button>
+<button class="action-btn location-btn" onclick="showMapModal(${idx})"><i class="fas fa-map-marker-alt"></i></button>
+<button class="action-btn" onclick="showQRModal(${idx})"><i class="fas fa-qrcode"></i></button>
+</div>
+<button class="fav-btn ${c.favorite?'active':''}" onclick="toggleFav(${idx},this)"><i class="fas fa-heart"></i></button>`;allGrid.appendChild(card);});document.getElementById('all-count').innerText=contacts.length;}
 
-/* ---------- REST OF YOUR ORIGINAL SCRIPT ---------- */
-// All existing functions like renderContacts, searchContacts, callContact, getCurrentLocation, showLocation, QR code, video call etc. remain exactly as in your original code
+function deleteContact(idx){if(confirm('Delete this contact?')){contacts.splice(idx,1);currentUser.contacts=contacts;saveCurrentUser();renderContacts();}}
+function toggleFav(idx,btn){contacts[idx].favorite=!contacts[idx].favorite;btn.classList.toggle('active');saveCurrentUser();renderContacts();}
+function callContact(phone){alert('Calling '+phone);}
+function msgContact(phone){alert('Messaging '+phone);}
+function searchContacts(){let q=document.getElementById('search').value.toLowerCase();contacts.forEach(c=>c.visible=c.name.toLowerCase().includes(q)||c.phone.includes(q)||c.email.includes(q));renderContacts();}
+
+// ================= MAP =================
+let mapIndex=null;
+function showMapModal(idx=null){mapIndex=idx;document.getElementById('map-modal').style.display='flex';if(idx!==null && contacts[idx].location){document.getElementById('map').innerHTML='Saved Location: '+contacts[idx].location;}else{document.getElementById('map').innerHTML='Click "Save Location" to set current location';}}
+function closeMapModal(){document.getElementById('map-modal').style.display='none';}
+function saveLocation(){if(mapIndex===null)return;navigator.geolocation.getCurrentPosition(pos=>{contacts[mapIndex].location=pos.coords.latitude+','+pos.coords.longitude;alert('Location saved');closeMapModal();renderContacts();},err=>{alert('Error getting location');});}
+
+// ================= QR =================
+let qrIndex=null;
+function showQRModal(idx=null){qrIndex=idx;document.getElementById('qr-modal').style.display='flex';let c=contacts[idx];let qr=new QRious({element:document.getElementById('qr-code'),value:`Name:${c.name}\nPhone:${c.phone}\nEmail:${c.email}`,size:200});}
+function closeQRModal(){document.getElementById('qr-modal').style.display='none';}
+
+// ================= VOICE SEARCH =================
+let recognition=null;
+function toggleVoiceSearch(){if(!('webkitSpeechRecognition' in window)){alert('Not supported');return;}if(!recognition){recognition=new webkitSpeechRecognition();recognition.continuous=false;recognition.interimResults=false;recognition.lang="en-US";recognition.onresult=e=>{document.getElementById('search').value=e.results[0][0].transcript;searchContacts();};recognition.onerror=e=>{alert('Error: '+e.error);}}recognition.start();}
 </script>
 </body>
 </html>
