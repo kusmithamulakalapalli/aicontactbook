@@ -6,6 +6,7 @@
 <title>Contact Hub 5.0</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <style>
 /* ---------- GENERAL ---------- */
 * {margin:0;padding:0;box-sizing:border-box;}
@@ -223,117 +224,181 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
   </div>
 </div>
 
+<!-- QR CODE MODAL -->
+<div id="qr-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;z-index:2000;">
+  <div style="width:300px;height:300px;position:relative;background:white;border-radius:15px;padding:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+    <span class="close" onclick="closeQR()" style="position:absolute;top:5px;right:10px;font-size:2rem;color:#333;cursor:pointer;">&times;</span>
+    <canvas id="qr-code"></canvas>
+    <p style="margin-top:10px;font-size:0.9rem;text-align:center;">Scan to get contact info</p>
+  </div>
+</div>
+
 <script>
-let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
-let history = JSON.parse(localStorage.getItem('history')) || [];
-let editingId = null;
-let recognition = null;
-let PRIVATE_PIN = localStorage.getItem('privatePin') || '1234';
+let contacts = [];
+let history = [];
+let privatePIN = "1234";
+let activePage = "all";
 
-// ---------- SPLASH & LOGIN ----------
-function enterApp(){ document.getElementById('splash').style.display='none'; document.getElementById('login-page').style.display='flex'; }
-function login(){ const username=document.getElementById('username').value.trim(); const password=document.getElementById('password').value.trim(); if(username==="admin" && password==="123"){ document.getElementById('login-page').style.display='none'; document.getElementById('app').style.display='block'; renderAll(); renderFavorites(); renderGroups(); renderEmergency(); renderBlocked(); } else { alert("Invalid username or password!"); } }
+/* ---------- SPLASH ---------- */
+function enterApp(){document.getElementById('splash').style.display='none';document.getElementById('login-page').style.display='flex';}
 
-// ---------- NAVIGATION ----------
-function showPage(page){ document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+page).classList.add('active'); document.querySelector(`.tab-btn[onclick="showPage('${page}')"]`)?.classList.add('active'); }
+/* ---------- LOGIN ---------- */
+function login(){
+  let username = document.getElementById('username').value;
+  let password = document.getElementById('password').value;
+  if(username && password){document.getElementById('login-page').style.display='none';document.getElementById('app').style.display='block';renderContacts();}
+  else alert('Enter credentials');
+}
 
-// ---------- MODAL ----------
-function openModal(mode,id){document.getElementById('modal').style.display='flex';document.getElementById('contact-form').reset();editingId=null;if(mode==='edit'){editingId=id;let c=contacts.find(c=>c.id===id);document.getElementById('name').value=c.name;document.getElementById('phone').value=c.phone;document.getElementById('email').value=c.email;document.getElementById('birthday').value=c.birthday;document.getElementById('blood').value=c.blood;document.getElementById('group').value=c.group;document.getElementById('notes').value=c.notes;document.getElementById('emergency').checked=c.emergency;document.getElementById('private').checked=c.private;document.getElementById('latitude').value=c.latitude || '';document.getElementById('longitude').value=c.longitude || '';}document.getElementById('modal-title').innerText=mode==='add'?'Add Contact':'Edit Contact';}
+/* ---------- MODAL ---------- */
+function openModal(type,id=null){
+  document.getElementById('modal').style.display='flex';
+  document.getElementById('modal-title').innerText = type==='add'?'Add Contact':'Edit Contact';
+  if(type==='edit' && id!==null){
+    let c = contacts.find(c=>c.id===id);
+    document.getElementById('name').value=c.name;
+    document.getElementById('phone').value=c.phone;
+    document.getElementById('email').value=c.email;
+    document.getElementById('blood').value=c.blood;
+    document.getElementById('group').value=c.group;
+    document.getElementById('notes').value=c.notes;
+    document.getElementById('latitude').value=c.latitude;
+    document.getElementById('longitude').value=c.longitude;
+  } else {document.getElementById('contact-form').reset();}
+}
 function closeModal(){document.getElementById('modal').style.display='none';}
 
-// ---------- AVATAR PREVIEW ----------
-function previewAvatar(){const file=document.getElementById('avatar').files[0];const preview=document.getElementById('avatar-preview');if(file){const reader=new FileReader();reader.onload=()=>{preview.style.backgroundImage=`url(${reader.result})`;preview.innerText='';};reader.readAsDataURL(file);}else{preview.style.backgroundImage='';preview.innerText='👤';}}
-
-// ---------- SAVE CONTACT ----------
-document.getElementById('contact-form').addEventListener('submit',function(e){
-e.preventDefault();const c={id:editingId||Date.now(),name:document.getElementById('name').value,phone:document.getElementById('phone').value,email:document.getElementById('email').value,birthday:document.getElementById('birthday').value,blood:document.getElementById('blood').value,group:document.getElementById('group').value,notes:document.getElementById('notes').value,emergency:document.getElementById('emergency').checked,private:document.getElementById('private').checked,blocked:false,favorite:false,latitude:document.getElementById('latitude').value || null,longitude:document.getElementById('longitude').value || null};if(editingId){contacts=contacts.map(x=>x.id===editingId?c:x);}else{contacts.push(c);}localStorage.setItem('contacts',JSON.stringify(contacts));closeModal();renderAll();renderFavorites();renderGroups();renderEmergency();renderBlocked();renderPrivate();});
-
-// ---------- RENDER FUNCTIONS ----------
-function renderAll(){const grid=document.getElementById('contacts-grid-all');grid.innerHTML='';contacts.forEach(c=>{grid.innerHTML+=contactCard(c);});document.getElementById('all-count').innerText=contacts.length;}
-function renderFavorites(){const grid=document.getElementById('contacts-grid-fav');grid.innerHTML='';contacts.filter(c=>c.favorite).forEach(c=>{grid.innerHTML+=contactCard(c);});document.getElementById('fav-count').innerText=contacts.filter(c=>c.favorite).length;}
-function renderGroups(){const grid=document.getElementById('contacts-grid-groups');grid.innerHTML='';contacts.forEach(c=>{if(c.group)grid.innerHTML+=contactCard(c);});document.getElementById('group-count').innerText=contacts.filter(c=>c.group).length;}
-function renderBlocked(){const grid=document.getElementById('contacts-grid-blocked');grid.innerHTML='';contacts.filter(c=>c.blocked).forEach(c=>{grid.innerHTML+=contactCard(c);});document.getElementById('blocked-count').innerText=contacts.filter(c=>c.blocked).length;}
-function renderEmergency(){const grid=document.getElementById('contacts-grid-emergency');grid.innerHTML='';contacts.filter(c=>c.emergency).forEach(c=>{grid.innerHTML+=contactCard(c);});document.getElementById('emergency-count').innerText=contacts.filter(c=>c.emergency).length;}
-function renderPrivate(){const grid=document.getElementById('contacts-grid-private');grid.innerHTML='';contacts.filter(c=>c.private).forEach(c=>{grid.innerHTML+=contactCard(c);});document.getElementById('private-count').innerText=contacts.filter(c=>c.private).length;}
-function contactCard(c){return `<div class="contact-card">
-<div class="contact-avatar">${c.name[0].toUpperCase()}</div>
-<div class="contact-name">${c.name}</div>
-<div class="contact-phone">📞 ${c.phone}</div>
-<div class="contact-email">✉️ ${c.email}</div>
-<div class="contact-blood">💉 ${c.blood}</div>
-<div class="contact-group">👥 ${c.group}</div>
-<div class="contact-actions">
-<button class="action-btn call-btn" onclick="callContact('${c.phone}')"><i class="fas fa-phone"></i></button>
-<button class="action-btn msg-btn" onclick="msgContact('${c.phone}')"><i class="fas fa-comment"></i></button>
-<button class="action-btn edit-btn" onclick="openModal('edit',${c.id})"><i class="fas fa-edit"></i></button>
-<button class="action-btn delete-btn" onclick="deleteContact(${c.id})"><i class="fas fa-trash"></i></button>
-<button class="action-btn location-btn" onclick="showLocation(${c.id})"><i class="fas fa-map-marker-alt"></i></button>
-</div>
-<button class="fav-btn ${c.favorite?'active':''}" onclick="toggleFav(${c.id})"><i class="fas fa-heart"></i></button>
-</div>`;}
-
-// ---------- CONTACT ACTIONS ----------
-function callContact(phone){alert(`Calling ${phone}...`);}
-function msgContact(phone){alert(`Messaging ${phone}...`);}
-function deleteContact(id){if(confirm("Delete this contact?")){contacts=contacts.filter(c=>c.id!==id);localStorage.setItem('contacts',JSON.stringify(contacts));renderAll();renderFavorites();renderGroups();renderEmergency();renderBlocked();renderPrivate();}}
-function toggleFav(id){contacts=contacts.map(c=>c.id===id?{...c,favorite:!c.favorite}:c);localStorage.setItem('contacts',JSON.stringify(contacts));renderAll();renderFavorites();}
-
-// ---------- SEARCH ----------
-function searchContacts(){let val=document.getElementById('search').value.toLowerCase();contacts.forEach(c=>{let card=document.querySelector(`#contacts-grid-all .contact-card:nth-child(${contacts.indexOf(c)+1})`);if(c.name.toLowerCase().includes(val)||c.phone.includes(val)){card.style.display='block';}else{card.style.display='none';}});}
-
-// ---------- VOICE SEARCH ----------
-function toggleVoiceSearch(){if(!('webkitSpeechRecognition' in window)){alert('Voice search not supported');return;}if(recognition){recognition.stop();recognition=null;document.getElementById('voice-btn').classList.remove('active');}else{recognition=new webkitSpeechRecognition();recognition.continuous=false;recognition.interimResults=false;recognition.onresult=function(e){document.getElementById('search').value=e.results[0][0].transcript;searchContacts();};recognition.start();document.getElementById('voice-btn').classList.add('active');}}
-
-// ---------- PRIVATE CONTACTS ----------
+/* ---------- PRIVATE ---------- */
 function showPrivate(){document.getElementById('private-modal').style.display='flex';}
-function closePrivateModal(){document.getElementById('private-modal').style.display='none';document.getElementById('private-pin').value='';}
-function unlockPrivate(){const pin=document.getElementById('private-pin').value;if(pin===PRIVATE_PIN){closePrivateModal();renderPrivate();showPage('private');}else{alert("Incorrect PIN!");}}
-function changePrivatePin(){let oldPin=prompt("Enter current PIN:");if(oldPin!==PRIVATE_PIN){alert("Incorrect current PIN!");return;}let newPin=prompt("Enter new PIN (4-6 digits):");if(!newPin||newPin.length<4||newPin.length>6){alert("Invalid PIN length!");return;}let confirmPin=prompt("Confirm new PIN:");if(newPin!==confirmPin){alert("PINs do not match!");return;}PRIVATE_PIN=newPin;localStorage.setItem('privatePin',PRIVATE_PIN);alert("Private PIN changed successfully!");}
+function closePrivateModal(){document.getElementById('private-modal').style.display='none';}
+function unlockPrivate(){
+  let pin=document.getElementById('private-pin').value;
+  if(pin===privatePIN){document.getElementById('private-modal').style.display='none';showPage('private');}
+  else alert('Incorrect PIN');
+}
+function changePrivatePin(){privatePIN=prompt("Enter new PIN:");alert("PIN changed successfully");}
 
-// ---------- LOCATION FUNCTIONS ----------
+/* ---------- VOICE SEARCH ---------- */
+let recognition;
+function toggleVoiceSearch(){
+  const btn=document.getElementById('voice-btn');
+  if(!('webkitSpeechRecognition' in window)){alert('Voice not supported');return;}
+  if(!recognition){
+    recognition = new webkitSpeechRecognition();
+    recognition.continuous=false;
+    recognition.lang='en-US';
+    recognition.interimResults=false;
+    recognition.onresult=(e)=>{document.getElementById('search').value=e.results[0][0].transcript;searchContacts();}
+  }
+  btn.classList.toggle('active');
+  if(btn.classList.contains('active')) recognition.start(); else recognition.stop();
+}
+
+/* ---------- CONTACTS ---------- */
+function renderContacts(){
+  const allGrid=document.getElementById('contacts-grid-all');allGrid.innerHTML='';
+  const favGrid=document.getElementById('contacts-grid-fav');favGrid.innerHTML='';
+  const privateGrid=document.getElementById('contacts-grid-private');privateGrid.innerHTML='';
+  contacts.forEach(c=>{
+    const card=document.createElement('div');card.className='contact-card';
+    card.innerHTML=`
+      <div class="contact-avatar">${c.name[0]}</div>
+      <div class="contact-name">${c.name}</div>
+      <div class="contact-phone">${c.phone}</div>
+      <div class="contact-email">${c.email}</div>
+      <div class="contact-blood">${c.blood}</div>
+      <div class="contact-group">${c.group}</div>
+      <div class="contact-actions">
+        <button class="action-btn call-btn" onclick="callContact('${c.phone}')"><i class="fas fa-phone"></i></button>
+        <button class="action-btn msg-btn" onclick="msgContact('${c.phone}')"><i class="fas fa-comment"></i></button>
+        <button class="action-btn edit-btn" onclick="openModal('edit',${c.id})"><i class="fas fa-edit"></i></button>
+        <button class="action-btn delete-btn" onclick="deleteContact(${c.id})"><i class="fas fa-trash"></i></button>
+        <button class="action-btn location-btn" onclick="showLocation(${c.id})"><i class="fas fa-map-marker-alt"></i></button>
+        <button class="action-btn" onclick="shareContact(${c.id})"><i class="fas fa-qrcode"></i></button>
+      </div>`;
+    allGrid.appendChild(card);
+    if(c.favorite) favGrid.appendChild(card.cloneNode(true));
+    if(c.private) privateGrid.appendChild(card.cloneNode(true));
+  });
+}
+
+/* ---------- PAGE SWITCH ---------- */
+function showPage(page){
+  document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.tab-btn[onclick*="'+page+'"]').classList.add('active');
+  activePage=page;
+}
+
+/* ---------- SEARCH ---------- */
+function searchContacts(){
+  let term=document.getElementById('search').value.toLowerCase();
+  document.querySelectorAll('.contact-card').forEach(c=>{
+    c.style.display=c.innerText.toLowerCase().includes(term)?'block':'none';
+  });
+}
+
+/* ---------- CALL / MESSAGE ---------- */
+function callContact(phone){alert('Calling '+phone);}
+function msgContact(phone){alert('Messaging '+phone);}
+
+/* ---------- LOCATION ---------- */
 function getCurrentLocation(){
-  if(!navigator.geolocation){ alert("Geolocation is not supported by your browser."); return; }
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      document.getElementById('latitude').value = pos.coords.latitude;
-      document.getElementById('longitude').value = pos.coords.longitude;
-      alert("Location captured! ✅");
-    },
-    err => { alert("Unable to retrieve location: " + err.message); }
-  );
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      document.getElementById('latitude').value=pos.coords.latitude;
+      document.getElementById('longitude').value=pos.coords.longitude;
+      alert('Location captured successfully!');
+    },()=>alert('Permission denied'));
+  } else alert('Geolocation not supported');
 }
-
 function showLocation(id){
-  const contact = contacts.find(c=>c.id===id);
-  if(!contact.latitude || !contact.longitude){
-    alert("No location saved for this contact. Please edit the contact and press 'Get Current Location'.");
-    return;
-  }
+  const c = contacts.find(c=>c.id===id);
   document.getElementById('map-modal').style.display='flex';
-  if(!window.L){
-    let link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-    document.head.appendChild(link);
-    let script = document.createElement('script');
-    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    script.onload = ()=> initMap(contact);
-    document.body.appendChild(script);
-  } else {
-    initMap(contact);
+  document.getElementById('map').innerHTML=`<iframe src="https://maps.google.com/maps?q=${c.latitude},${c.longitude}&z=15&output=embed" style="width:100%;height:100%;border:none;border-radius:15px;"></iframe>`;
+}
+function closeMap(){document.getElementById('map-modal').style.display='none';}
+
+/* ---------- QR CODE ---------- */
+function shareContact(id){
+  const c = contacts.find(c=>c.id===id);
+  const contactData = `Name: ${c.name}\nPhone: ${c.phone}\nEmail: ${c.email}\nBlood Group: ${c.blood}\nGroup: ${c.group}\nNotes: ${c.notes}`;
+  const qr = new QRious({element: document.getElementById('qr-code'),value:contactData,size:250});
+  document.getElementById('qr-modal').style.display='flex';
+}
+function closeQR(){document.getElementById('qr-modal').style.display='none';}
+
+/* ---------- CONTACT FORM ---------- */
+document.getElementById('contact-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  let id = Date.now();
+  let c={id:id,
+         name:document.getElementById('name').value,
+         phone:document.getElementById('phone').value,
+         email:document.getElementById('email').value,
+         blood:document.getElementById('blood').value,
+         group:document.getElementById('group').value,
+         notes:document.getElementById('notes').value,
+         latitude:document.getElementById('latitude').value,
+         longitude:document.getElementById('longitude').value,
+         favorite:false,
+         private:document.getElementById('private').checked,
+         emergency:document.getElementById('emergency').checked};
+  contacts.push(c);closeModal();renderContacts();
+});
+
+function deleteContact(id){contacts=contacts.filter(c=>c.id!==id);renderContacts();}
+
+function previewAvatar(){
+  const file=document.getElementById('avatar').files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=e=>document.getElementById('avatar-preview').innerHTML=`<img src="${e.target.result}" style="width:60px;height:60px;border-radius:50%">`;
+    reader.readAsDataURL(file);
   }
 }
 
-function initMap(contact){
-  document.getElementById('map').innerHTML='';
-  let map = L.map('map').setView([contact.latitude, contact.longitude], 15);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
-  L.marker([contact.latitude, contact.longitude]).addTo(map)
-    .bindPopup(`${contact.name} 📍`)
-    .openPopup();
-}
-
-function closeMap(){ document.getElementById('map-modal').style.display='none'; }
 </script>
 </body>
 </html>
