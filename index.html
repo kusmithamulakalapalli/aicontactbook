@@ -217,70 +217,39 @@ let editingId = null;
 let recognition = null;
 const PRIVATE_PIN = "1234";
 
-function enterApp(){
-    document.getElementById('splash').style.display='none';
-    document.getElementById('login-page').style.display='flex';
-}
+function enterApp(){ document.getElementById('splash').style.display='none'; document.getElementById('login-page').style.display='flex'; }
+function login(){ const username=document.getElementById('username').value.trim(); const password=document.getElementById('password').value.trim(); if(username==="admin" && password==="123"){ document.getElementById('login-page').style.display='none'; document.getElementById('app').style.display='block'; renderAll(); renderFavorites(); renderGroups(); renderEmergency(); renderBlocked(); } else { alert("Invalid username or password!"); } }
 
-function login(){
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
-    if(username === "admin" && password === "123"){
-        document.getElementById('login-page').style.display='none';
-        document.getElementById('app').style.display='block';
-        renderAll(); renderFavorites(); renderGroups(); renderEmergency(); renderBlocked();
-    } else { alert("Invalid username or password!"); }
-}
-
-function showPage(page){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-}
-
-function showPrivate(){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelector('button[onclick="showPrivate()"]').classList.add('active');
-  document.getElementById('private-modal').style.display='flex';
-}
-function unlockPrivate(){
-  const pin = document.getElementById('private-pin').value;
-  if(pin===PRIVATE_PIN){
-    document.getElementById('private-modal').style.display='none';
-    renderPrivate();
-    showPage('private');
-    document.getElementById('private-pin').value='';
-  } else { alert("Incorrect PIN!"); }
-}
-function closePrivateModal(){
-  document.getElementById('private-modal').style.display='none';
-  document.getElementById('private-pin').value='';
-}
+function showPage(page){ document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+page).classList.add('active'); }
+function showPrivate(){ document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelector('button[onclick="showPrivate()"]').classList.add('active'); document.getElementById('private-modal').style.display='flex'; }
+function unlockPrivate(){ const pin=document.getElementById('private-pin').value; if(pin===PRIVATE_PIN){ document.getElementById('private-modal').style.display='none'; renderPrivate(); showPage('private'); document.getElementById('private-pin').value=''; } else { alert("Incorrect PIN!"); } }
+function closePrivateModal(){ document.getElementById('private-modal').style.display='none'; document.getElementById('private-pin').value=''; }
 
 // ---------- RENDER FUNCTIONS ----------
-function renderAll(){
-  renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && !c.blocked));
-  document.getElementById('all-count').innerText=contacts.filter(c=>!c.private && !c.blocked).length;
-}
-function renderFavorites(){
-  renderGrid('contacts-grid-fav',contacts.filter(c=>c.favorite && !c.private && !c.blocked));
-  document.getElementById('fav-count').innerText=contacts.filter(c=>c.favorite && !c.private && !c.blocked).length;
-}
+function renderAll(){ renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && !c.blocked)); document.getElementById('all-count').innerText=contacts.filter(c=>!c.private && !c.blocked).length; }
+function renderFavorites(){ renderGrid('contacts-grid-fav',contacts.filter(c=>c.favorite && !c.private && !c.blocked)); document.getElementById('fav-count').innerText=contacts.filter(c=>c.favorite && !c.private && !c.blocked).length; }
 function renderGroups(){
   let groups={};
-  contacts.filter(c=>!c.private && !c.blocked).forEach(c=>{let g=c.group||'Uncategorized';if(!groups[g]) groups[g]=[];groups[g].push(c);});
+  contacts.filter(c=>!c.private && !c.blocked).forEach(c=>{ let g=c.group||'Uncategorized'; if(!groups[g]) groups[g]=[]; groups[g].push(c); });
   let html='';
-  Object.entries(groups).forEach(([g,list])=>{html+=`<div class="contact-card" onclick="filterGroup('${g}')"><b>${g}</b><div>${list.length} contacts</div></div>`;});
+  Object.entries(groups).forEach(([g,list])=>{
+    html+=`<div class="contact-card">
+      <b>${g}</b>
+      <div>${list.length} contacts</div>
+      <div style="margin-top:0.5rem;">
+        <button onclick="callGroup('${g}')" style="padding:5px 10px;background:#4ecdc4;color:white;border:none;border-radius:5px;cursor:pointer;">Call Group</button>
+      </div>
+    </div>`;
+  });
   document.getElementById('contacts-grid-groups').innerHTML=html;
   document.getElementById('group-count').innerText=Object.keys(groups).length;
 }
-function renderPrivate(){renderGrid('contacts-grid-private',contacts.filter(c=>c.private));document.getElementById('private-count').innerText=contacts.filter(c=>c.private).length;}
-function renderBlocked(){renderGrid('contacts-grid-blocked',contacts.filter(c=>c.blocked));document.getElementById('blocked-count').innerText=contacts.filter(c=>c.blocked).length;}
-function renderEmergency(){renderGrid('contacts-grid-emergency',contacts.filter(c=>c.emergency && !c.blocked));document.getElementById('emergency-count').innerText=contacts.filter(c=>c.emergency && !c.blocked).length;}
+function renderPrivate(){ renderGrid('contacts-grid-private',contacts.filter(c=>c.private)); document.getElementById('private-count').innerText=contacts.filter(c=>c.private).length; }
+function renderBlocked(){ renderGrid('contacts-grid-blocked',contacts.filter(c=>c.blocked)); document.getElementById('blocked-count').innerText=contacts.filter(c=>c.blocked).length; }
+function renderEmergency(){ renderGrid('contacts-grid-emergency',contacts.filter(c=>c.emergency && !c.blocked)); document.getElementById('emergency-count').innerText=contacts.filter(c=>c.emergency && !c.blocked).length; }
 
 function renderGrid(gridId,data){
-  const grid=document.getElementById(gridId);grid.innerHTML='';
+  const grid=document.getElementById(gridId); grid.innerHTML='';
   data.forEach(c=>{
     grid.innerHTML+=`<div class="contact-card">
       <button class="fav-btn ${c.favorite?'active':''}" onclick="toggleFav(${c.id})">${c.favorite?'❤️':'🤍'}</button>
@@ -303,15 +272,12 @@ function renderGrid(gridId,data){
 }
 
 // ---------- FAVORITE / BLOCK ----------
-function toggleFav(id){let c=contacts.find(c=>c.id===id);c.favorite=!c.favorite;saveContacts();renderAll();renderFavorites();renderGroups();renderPrivate();renderBlocked();renderEmergency();}
-function toggleBlock(id){let c=contacts.find(c=>c.id===id);c.blocked=!c.blocked;saveContacts();renderAll();renderFavorites();renderGroups();renderPrivate();renderBlocked();renderEmergency();}
+function toggleFav(id){ let c=contacts.find(c=>c.id===id); c.favorite=!c.favorite; saveContacts(); renderAll(); renderFavorites(); renderGroups(); renderPrivate(); renderBlocked(); renderEmergency(); }
+function toggleBlock(id){ let c=contacts.find(c=>c.id===id); c.blocked=!c.blocked; saveContacts(); renderAll(); renderFavorites(); renderGroups(); renderPrivate(); renderBlocked(); renderEmergency(); }
 
 // ---------- ADD / EDIT ----------
 function openModal(type,id=null){
-  editingId=id;
-  document.getElementById('modal').style.display='flex';
-  document.getElementById('contact-form').reset();
-  document.getElementById('avatar-preview').innerHTML='👤';
+  editingId=id; document.getElementById('modal').style.display='flex'; document.getElementById('contact-form').reset(); document.getElementById('avatar-preview').innerHTML='👤';
   document.getElementById('modal-title').innerText=type==='add'?'Add Contact':'Edit Contact';
   if(type==='edit' && id!==null){
     let c=contacts.find(c=>c.id===id);
@@ -324,12 +290,12 @@ function openModal(type,id=null){
     document.getElementById('notes').value=c.notes;
     document.getElementById('emergency').checked=c.emergency||false;
     document.getElementById('private').checked=c.private||false;
-    if(c.avatar)document.getElementById('avatar-preview').innerHTML=`<img src="${c.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    if(c.avatar) document.getElementById('avatar-preview').innerHTML=`<img src="${c.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
   }
 }
-function closeModal(){document.getElementById('modal').style.display='none';editingId=null;}
-function previewAvatar(){let file=document.getElementById('avatar').files[0];if(file){let reader=new FileReader();reader.onload=e=>{document.getElementById('avatar-preview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;};reader.readAsDataURL(file);}}
-document.getElementById('contact-form').addEventListener('submit',function(e){e.preventDefault();saveContact();closeModal();});
+function closeModal(){ document.getElementById('modal').style.display='none'; editingId=null; }
+function previewAvatar(){ let file=document.getElementById('avatar').files[0]; if(file){ let reader=new FileReader(); reader.onload=e=>{ document.getElementById('avatar-preview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; }; reader.readAsDataURL(file); } }
+document.getElementById('contact-form').addEventListener('submit',function(e){ e.preventDefault(); saveContact(); closeModal(); });
 
 function saveContact(){
   let c={
@@ -343,36 +309,50 @@ function saveContact(){
     notes:document.getElementById('notes').value,
     emergency:document.getElementById('emergency').checked,
     private:document.getElementById('private').checked,
-    blocked: false, // new
+    blocked: false,
     avatar:document.getElementById('avatar-preview').querySelector('img')?document.getElementById('avatar-preview').querySelector('img').src:''
   };
-  if(editingId){let index=contacts.findIndex(x=>x.id===editingId);contacts[index]=c;}else{contacts.push(c);}
-  saveContacts(); renderAll();renderFavorites();renderGroups();renderPrivate();renderBlocked();renderEmergency();
+  if(editingId){ let index=contacts.findIndex(x=>x.id===editingId); contacts[index]=c; } else { contacts.push(c); }
+  saveContacts(); renderAll(); renderFavorites(); renderGroups(); renderPrivate(); renderBlocked(); renderEmergency();
 }
-function editContact(id){openModal('edit',id);}
-function deleteContact(id){if(confirm('Delete this contact?')){contacts=contacts.filter(c=>c.id!==id);saveContacts();renderAll();renderFavorites();renderGroups();renderPrivate();renderBlocked();renderEmergency();}}
+function editContact(id){ openModal('edit',id); }
+function deleteContact(id){ if(confirm('Delete this contact?')){ contacts=contacts.filter(c=>c.id!==id); saveContacts(); renderAll(); renderFavorites(); renderGroups(); renderPrivate(); renderBlocked(); renderEmergency(); } }
 
 // ---------- LOCAL STORAGE ----------
-function saveContacts(){localStorage.setItem('contacts',JSON.stringify(contacts));}
+function saveContacts(){ localStorage.setItem('contacts',JSON.stringify(contacts)); }
 
 // ---------- SEARCH ----------
-function searchContacts(){
-  let q=document.getElementById('search').value.toLowerCase();
-  renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && !c.blocked && (c.name.toLowerCase().includes(q) || c.phone.includes(q))));
-}
+function searchContacts(){ let q=document.getElementById('search').value.toLowerCase(); renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && !c.blocked && (c.name.toLowerCase().includes(q) || c.phone.includes(q)))); }
 
-// ---------- GROUP FILTER ----------
-function filterGroup(g){renderGrid('contacts-grid-all',contacts.filter(c=>!c.private && !c.blocked && c.group===g));showPage('all');}
+// ---------- GROUP CALL SYSTEM ----------
+function callGroup(groupName){
+  const groupContacts = contacts.filter(c=>c.group===groupName && !c.private && !c.blocked && c.phone);
+  if(groupContacts.length === 0){ alert('No valid phone numbers in this group!'); return; }
+  const numbers = groupContacts.map(c => `${c.name}: ${c.phone}`).join('\n');
+  document.getElementById('modal').style.display='flex';
+  document.getElementById('modal').innerHTML=`
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Call Group: ${groupName}</h2>
+      <p>Click each number to call:</p>
+      ${groupContacts.map(c=>`<div style="margin:5px 0;"><a href="tel:${c.phone}" style="color:#fff;background:#4ecdc4;padding:8px 12px;border-radius:5px;text-decoration:none;display:inline-block;">${c.name} 📞 ${c.phone}</a></div>`).join('')}
+      <button onclick="copyGroupNumbers('${groupName}')" style="margin-top:10px;padding:5px 10px;background:#ff6b6b;color:white;border:none;border-radius:5px;cursor:pointer;">Copy All Numbers</button>
+      <p style="margin-top:10px;color:#555;">Numbers:<br>${numbers.replace(/\n/g,'<br>')}</p>
+    </div>
+  `;
+}
+function copyGroupNumbers(groupName){
+  const groupContacts = contacts.filter(c=>c.group===groupName && !c.private && !c.blocked && c.phone);
+  const numbers = groupContacts.map(c=>c.phone).join(', ');
+  navigator.clipboard.writeText(numbers).then(()=>alert('Numbers copied to clipboard!'));
+}
 
 // ---------- LOCATION ----------
 function trackLocation(id){
   let c=contacts.find(c=>c.id===id);
   if(!navigator.geolocation)return alert('Geolocation not supported.');
   document.getElementById('modal').style.display='flex';
-  document.getElementById('modal').innerHTML=`<div class="modal-content">
-  <span class="close" onclick="closeModal()">&times;</span>
-  <h2>Live Location - ${c.name}</h2>
-  <div id="map" style="width:100%;height:400px;border-radius:15px;margin-top:1rem;"></div></div>`;
+  document.getElementById('modal').innerHTML=`<div class="modal-content"><span class="close" onclick="closeModal()">&times;</span><h2>Live Location - ${c.name}</h2><div id="map" style="width:100%;height:400px;border-radius:15px;margin-top:1rem;"></div></div>`;
   navigator.geolocation.watchPosition(pos=>{
     let lat=pos.coords.latitude;
     let lng=pos.coords.longitude;
@@ -380,26 +360,22 @@ function trackLocation(id){
   },err=>alert('Unable to get location.'));
 }
 
+// ---------- FAVORITE / BLOCK ----------
+function toggleFav(id){ let c=contacts.find(c=>c.id===id); c.favorite=!c.favorite; saveContacts(); renderAll(); renderFavorites(); renderGroups(); renderPrivate(); renderBlocked(); renderEmergency(); }
+function toggleBlock(id){ let c=contacts.find(c=>c.id===id); c.blocked=!c.blocked; saveContacts(); renderAll(); renderFavorites(); renderGroups(); renderPrivate(); renderBlocked(); renderEmergency(); }
+
 // ---------- HISTORY ----------
-function renderHistory(){
-  let html='';
-  history.forEach(h=>{html+=`<div class="history-card">${h.type.toUpperCase()} ${h.contact} - ${h.time}</div>`;});
-  document.getElementById('history-grid').innerHTML=html;
-  document.getElementById('history-count').innerText=history.length;
-}
+function renderHistory(){ let html=''; history.forEach(h=>{ html+=`<div class="history-card">${h.type.toUpperCase()} ${h.contact} - ${h.time}</div>`; }); document.getElementById('history-grid').innerHTML=html; document.getElementById('history-count').innerText=history.length; }
 
 // ---------- VOICE SEARCH ----------
 function toggleVoiceSearch(){
-  if(!('webkitSpeechRecognition' in window)){alert('Voice search not supported.');return;}
+  if(!('webkitSpeechRecognition' in window)){ alert('Voice search not supported.'); return; }
   recognition = new webkitSpeechRecognition();
   recognition.lang='en-US';
   recognition.continuous=false;
   recognition.interimResults=false;
   recognition.start();
-  recognition.onresult=e=>{
-    document.getElementById('search').value=e.results[0][0].transcript;
-    searchContacts();
-  };
+  recognition.onresult=e=>{ document.getElementById('search').value=e.results[0][0].transcript; searchContacts(); };
 }
 </script>
 </body>
