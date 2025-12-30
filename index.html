@@ -138,28 +138,10 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
     <div class="contacts-grid" id="contacts-grid-fav"></div>
   </div>
 
-  <!-- GROUPS -->
-  <div id="page-groups" class="app-page">
-    <div class="page-title"><h2>Groups (<span id="group-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-groups"></div>
-  </div>
-
   <!-- PRIVATE CONTACTS -->
   <div id="page-private" class="app-page">
     <div class="page-title"><h2>Private Contacts (<span id="private-count">0</span>)</h2></div>
     <div class="contacts-grid" id="contacts-grid-private"></div>
-  </div>
-
-  <!-- BLOCKED CONTACTS -->
-  <div id="page-blocked" class="app-page">
-    <div class="page-title"><h2>Blocked Contacts (<span id="blocked-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-blocked"></div>
-  </div>
-
-  <!-- EMERGENCY CONTACTS -->
-  <div id="page-emergency" class="app-page">
-    <div class="page-title"><h2>Emergency Contacts (<span id="emergency-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-emergency"></div>
   </div>
 
   <!-- HISTORY -->
@@ -205,7 +187,7 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
   </div>
 </div>
 
-<!-- PRIVATE UNLOCK MODAL -->
+<!-- PRIVATE MODAL -->
 <div id="private-modal">
   <div class="modal-content">
     <span class="close" onclick="closePrivateModal()">&times;</span>
@@ -225,13 +207,13 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
 </div>
 
 <script>
-/* ---------- SPLASH ---------- */
+// ---------- SPLASH ----------
 function enterApp(){
   document.getElementById('splash').style.display='none';
   document.getElementById('login-page').style.display='flex';
 }
 
-/* ---------- LOGIN ---------- */
+// ---------- LOGIN ----------
 function login(){
   let username=document.getElementById('username').value;
   let password=document.getElementById('password').value;
@@ -242,57 +224,91 @@ function login(){
   } else {alert('Enter credentials');}
 }
 
-/* ---------- CONTACT STORAGE ---------- */
+// ---------- CONTACT STORAGE ----------
 let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
 let history = JSON.parse(localStorage.getItem('history')) || [];
 let privatePIN = localStorage.getItem('privatePIN') || "1234";
-let activePage = "all";
+let editContactId = null;
 
+// ---------- SAVE ----------
 function saveContacts(){localStorage.setItem('contacts',JSON.stringify(contacts));}
 function saveHistory(){localStorage.setItem('history',JSON.stringify(history));}
 function savePrivatePIN(){localStorage.setItem('privatePIN',privatePIN);}
 
-/* ---------- OPEN/CLOSE MODALS ---------- */
+// ---------- MODALS ----------
 function openModal(mode,id=null){
   document.getElementById('modal').style.display='flex';
-  if(mode==='add'){document.getElementById('modal-title').innerText='Add Contact';document.getElementById('contact-form').reset();}
+  const form = document.getElementById('contact-form');
+  if(mode==='add'){
+    document.getElementById('modal-title').innerText='Add Contact';
+    form.reset();
+    editContactId = null;
+  } else if(mode==='edit'){
+    document.getElementById('modal-title').innerText='Edit Contact';
+    const c = contacts.find(ct => ct.id === id);
+    editContactId = id;
+    document.getElementById('name').value = c.name;
+    document.getElementById('phone').value = c.phone;
+    document.getElementById('email').value = c.email;
+    document.getElementById('blood').value = c.blood;
+    document.getElementById('group').value = c.group;
+    document.getElementById('notes').value = c.notes;
+    document.getElementById('private').checked = c.private;
+    document.getElementById('emergency').checked = c.emergency;
+    document.getElementById('latitude').value = c.latitude;
+    document.getElementById('longitude').value = c.longitude;
+  }
 }
 function closeModal(){document.getElementById('modal').style.display='none';}
 function showPrivate(){document.getElementById('private-modal').style.display='flex';}
 function closePrivateModal(){document.getElementById('private-modal').style.display='none';}
 
-/* ---------- CONTACT FUNCTIONS ---------- */
-document.getElementById('contact-form').addEventListener('submit',function(e){
+// ---------- CONTACT FORM ----------
+document.getElementById('contact-form').addEventListener('submit', function(e){
   e.preventDefault();
-  let id = Date.now();
-  let c = {
-    id:id,
-    name:document.getElementById('name').value,
-    phone:document.getElementById('phone').value,
-    email:document.getElementById('email').value,
-    blood:document.getElementById('blood').value,
-    group:document.getElementById('group').value,
-    notes:document.getElementById('notes').value,
-    latitude:document.getElementById('latitude').value,
-    longitude:document.getElementById('longitude').value,
-    favorite:false,
-    private:document.getElementById('private').checked,
-    emergency:document.getElementById('emergency').checked
-  };
-  contacts.push(c);
+  if(editContactId){
+    let c = contacts.find(ct => ct.id === editContactId);
+    c.name = document.getElementById('name').value;
+    c.phone = document.getElementById('phone').value;
+    c.email = document.getElementById('email').value;
+    c.blood = document.getElementById('blood').value;
+    c.group = document.getElementById('group').value;
+    c.notes = document.getElementById('notes').value;
+    c.private = document.getElementById('private').checked;
+    c.emergency = document.getElementById('emergency').checked;
+    c.latitude = document.getElementById('latitude').value;
+    c.longitude = document.getElementById('longitude').value;
+  } else {
+    let id = Date.now();
+    let c = {
+      id:id,
+      name:document.getElementById('name').value,
+      phone:document.getElementById('phone').value,
+      email:document.getElementById('email').value,
+      blood:document.getElementById('blood').value,
+      group:document.getElementById('group').value,
+      notes:document.getElementById('notes').value,
+      latitude:document.getElementById('latitude').value,
+      longitude:document.getElementById('longitude').value,
+      favorite:false,
+      private:document.getElementById('private').checked,
+      emergency:document.getElementById('emergency').checked
+    };
+    contacts.push(c);
+  }
   saveContacts();
   closeModal();
   renderContacts();
 });
 
-/* ---------- DELETE ---------- */
+// ---------- DELETE ----------
 function deleteContact(id){
   contacts = contacts.filter(c=>c.id!==id);
   saveContacts();
   renderContacts();
 }
 
-/* ---------- CALL / MESSAGE ---------- */
+// ---------- CALL / MESSAGE ----------
 function callContact(phone){
   history.push({type:'call',phone:phone,time:new Date().toLocaleString()});
   saveHistory();
@@ -304,12 +320,12 @@ function msgContact(phone){
   window.location.href = `sms:${phone}`;
 }
 
-/* ---------- FAVORITE ---------- */
+// ---------- FAVORITE ----------
 function toggleFavorite(id){
   let c=contacts.find(c=>c.id===id); c.favorite=!c.favorite; saveContacts(); renderContacts();
 }
 
-/* ---------- RENDER CONTACTS ---------- */
+// ---------- RENDER CONTACTS ----------
 function renderContacts(){
   const allGrid=document.getElementById('contacts-grid-all');
   const favGrid=document.getElementById('contacts-grid-fav');
@@ -326,7 +342,9 @@ function renderContacts(){
       <div class="contact-actions">
         <button class="action-btn call-btn" onclick="callContact('${c.phone}')"><i class="fas fa-phone"></i></button>
         <button class="action-btn msg-btn" onclick="msgContact('${c.phone}')"><i class="fas fa-comment"></i></button>
+        <button class="action-btn edit-btn" onclick="openModal('edit', ${c.id})"><i class="fas fa-edit"></i></button>
         <button class="action-btn delete-btn" onclick="deleteContact(${c.id})"><i class="fas fa-trash"></i></button>
+        <button class="action-btn location-btn" onclick="openMap(${c.latitude},${c.longitude})"><i class="fas fa-map-marker-alt"></i></button>
       </div>
       <button class="fav-btn ${c.favorite?'active':''}" onclick="toggleFavorite(${c.id})"><i class="fas fa-heart"></i></button>`;
     allGrid.appendChild(card);
@@ -338,7 +356,7 @@ function renderContacts(){
   document.getElementById('private-count').innerText=contacts.filter(c=>c.private).length;
 }
 
-/* ---------- SEARCH ---------- */
+// ---------- SEARCH ----------
 function searchContacts(){
   let query=document.getElementById('search').value.toLowerCase();
   document.querySelectorAll('.contact-card').forEach(card=>{
@@ -346,14 +364,14 @@ function searchContacts(){
   });
 }
 
-/* ---------- PRIVATE PIN ---------- */
+// ---------- PRIVATE PIN ----------
 function unlockPrivate(){
   let pin=document.getElementById('private-pin').value;
   if(pin===privatePIN){document.getElementById('private-modal').style.display='none'; showPage('private');}else{alert('Incorrect PIN');}
 }
 function changePrivatePin(){let newPin=prompt('Enter new PIN:'); if(newPin){privatePIN=newPin; savePrivatePIN(); alert('PIN changed');}}
 
-/* ---------- PAGE NAV ---------- */
+// ---------- PAGE NAV ----------
 function showPage(page){
   document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
@@ -361,7 +379,7 @@ function showPage(page){
   document.querySelector(`.tab-btn[onclick="showPage('${page}')"]`).classList.add('active');
 }
 
-/* ---------- LOCATION ---------- */
+// ---------- LOCATION ----------
 function getCurrentLocation(){
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(p=>{
@@ -372,14 +390,14 @@ function getCurrentLocation(){
   }else{alert('Geolocation not supported');}
 }
 
-/* ---------- MAP ---------- */
+// ---------- MAP ----------
 function openMap(lat,long){
   document.getElementById('map-modal').style.display='flex';
   document.getElementById('map-frame').src=`https://maps.google.com/maps?q=${lat},${long}&z=15&output=embed`;
 }
 function closeMap(){document.getElementById('map-modal').style.display='none';}
 
-/* ---------- VOICE SEARCH ---------- */
+// ---------- VOICE SEARCH ----------
 let recognition,voiceActive=false;
 function toggleVoiceSearch(){
   if(!('webkitSpeechRecognition' in window)){alert('Voice search not supported');return;}
@@ -388,13 +406,14 @@ function toggleVoiceSearch(){
   else{recognition.stop();voiceActive=false;document.getElementById('voice-btn').classList.remove('active');}
 }
 
-/* ---------- CHART ---------- */
+// ---------- HISTORY CHART ----------
 function renderHistoryChart(){
   const ctx=document.getElementById('chart').getContext('2d');
   const callCount=history.filter(h=>h.type==='call').length;
   const smsCount=history.filter(h=>h.type==='sms').length;
   new Chart(ctx,{type:'doughnut',data:{labels:['Calls','SMS'],datasets:[{data:[callCount,smsCount],backgroundColor:['#4ecdc4','#f9ca24']}]},options:{responsive:true}});
 }
+
 window.addEventListener('load',()=>{renderHistoryChart(); renderContacts();});
 </script>
 </body>
