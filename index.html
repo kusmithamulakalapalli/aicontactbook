@@ -342,9 +342,40 @@ function searchContacts(){
   });
 }
 
-/* ---------- CALL / MESSAGE ---------- */
-function callContact(phone){alert('Calling '+phone);}
-function msgContact(phone){alert('Messaging '+phone);}
+/* ---------- CALL / MESSAGE (FIXED) ---------- */
+function callContact(phone){
+  history.push({
+    type: 'Call',
+    phone: phone,
+    time: new Date().toLocaleString()
+  });
+  updateHistory();
+  window.location.href = `tel:${phone}`;
+}
+
+function msgContact(phone){
+  history.push({
+    type: 'Message',
+    phone: phone,
+    time: new Date().toLocaleString()
+  });
+  updateHistory();
+  window.location.href = `sms:${phone}`;
+}
+
+/* ---------- HISTORY UPDATE ---------- */
+function updateHistory(){
+  const grid = document.getElementById('history-grid');
+  grid.innerHTML = '';
+  history.slice().reverse().forEach(h=>{
+    const div = document.createElement('div');
+    div.className = 'history-card';
+    div.innerHTML = `<b>${h.type}</b> → ${h.phone}<br><small>${h.time}</small>`;
+    grid.appendChild(div);
+  });
+  document.getElementById('history-count').innerText = history.length;
+}
+
 
 /* ---------- LOCATION ---------- */
 function getCurrentLocation(){
