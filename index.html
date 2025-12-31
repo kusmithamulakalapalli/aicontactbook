@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
 <style>
 /* ---------- GENERAL ---------- */
 * {margin:0;padding:0;box-sizing:border-box;}
@@ -18,7 +19,6 @@ a{text-decoration:none;color:inherit;}
 #splash{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;z-index:1000;}
 #splash .title{font-size:4rem;color:#4ecdc4;text-shadow:0 0 20px #4ecdc4;animation:glow 2s infinite;margin-bottom:1rem;}
 @keyframes glow{0%,100%{text-shadow:0 0 20px #4ecdc4;}50%{text-shadow:0 0 40px #ff6b6b;}}
-
 .enter-btn{background:linear-gradient(45deg,#ff6b6b,#4ecdc4);color:white;border:none;padding:15px 40px;font-size:1.2rem;border-radius:50px;cursor:pointer;box-shadow:0 10px 30px rgba(255,107,107,0.4);transition:all 0.3s ease;animation:bounce 2s infinite;}
 .enter-btn:hover{transform:scale(1.05);box-shadow:0 15px 40px rgba(255,107,107,0.6);}
 @keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-5px);}}
@@ -45,52 +45,12 @@ input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
 #voice-btn.active{background:#ff6b6b;color:white;border-color:#ff6b6b;}
 #add-contact{background:linear-gradient(45deg,#4ecdc4,#44a08d);color:white;border:none;padding:10px 16px;border-radius:25px;cursor:pointer;font-size:0.9rem;font-weight:500;transition:all 0.3s;}
 #add-contact:hover{transform:scale(1.05);}
-
-/* ---------- APP PAGES ---------- */
-.app-page{display:none;padding:1rem 1.5rem;min-height:calc(100vh - 130px);}
-.app-page.active{display:block;}
-.page-title{padding:1rem 0;border-bottom:2px solid rgba(255,255,255,0.1);margin-bottom:1rem;color:white;}
-.page-title h2{font-size:1.6rem;display:flex;align-items:center;gap:0.5rem;}
-
-/* ---------- CONTACT CARD ---------- */
-.contacts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
-.contact-card{background:rgba(255,255,255,0.95);border-radius:15px;padding:1rem;box-shadow:0 10px 40px rgba(0,0,0,0.1);position:relative;overflow:hidden;transition:0.3s;}
-.contact-card:hover{transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,0,0,0.2);}
-.contact-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(45deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;margin-bottom:0.5rem;}
-.contact-name{font-size:1.2rem;font-weight:bold;color:#333;margin-bottom:0.3rem;}
-.contact-phone,.contact-email,.contact-blood,.contact-group{font-size:0.9rem;color:#555;margin-bottom:0.2rem;}
-.contact-actions{display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap;}
-.action-btn{padding:8px 12px;border:none;border-radius:50%;cursor:pointer;font-size:1rem;width:40px;height:40px;display:flex;align-items:center;justify-content:center;transition:0.2s;}
-.call-btn{background:#4ecdc4;color:white;}
-.msg-btn{background:#f9ca24;color:white;}
-.edit-btn{background:#667eea;color:white;}
-.delete-btn{background:#ff6b6b;color:white;}
-.location-btn{background:#ff6b6b;color:white;}
-.block-btn{background:#999;color:white;}
-.fav-btn{position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#ffd700;}
-.fav-btn.active{color:#ff6b6b;animation:heartBeat 0.3s;}
-@keyframes heartBeat{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
-
-/* ---------- MODAL ---------- */
-#modal,#private-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center;}
-.modal-content{background:white;padding:1.5rem;border-radius:15px;width:90%;max-width:500px;max-height:80vh;overflow-y:auto;position:relative;}
-.close{position:absolute;top:10px;right:20px;font-size:1.8rem;cursor:pointer;color:#999;}
-input[type=file]{padding:5px;}
-textarea{width:100%;padding:8px;border-radius:10px;border:2px solid #eee;margin-top:0.3rem;}
-select#blood {width: 100%; padding: 15px; margin: 1rem 0; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; transition: border 0.3s;}
-select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1);}
-
-/* ---------- HISTORY ---------- */
-#history-grid{display:grid;grid-template-columns:1fr;gap:0.5rem;}
-.history-card{background:#fff3cd;padding:0.5rem 1rem;border-radius:10px;font-size:0.9rem;color:#333;}
-
-/* ---------- RESPONSIVE ---------- */
-@media(max-width:768px){.contacts-grid{grid-template-columns:1fr;}.header{flex-direction:column;gap:1rem;}.nav-tabs{order:3;width:100%;justify-content:center;}.controls{order:2;width:100%;justify-content:center;}}
 </style>
 </head>
+
 <body>
 
-<!-- ========================== EXISTING CODE FROM YOUR FILE ========================== -->
+<!-- ========================== EXISTING CODE ========================== -->
 
 <!-- SPLASH -->
 <div id="splash">
@@ -103,8 +63,11 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
 <div id="login-page">
   <div class="login-card">
     <h2><i class="fas fa-lock"></i> Welcome Back</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
+
+    <!-- 🔐 UPDATED INPUTS -->
+    <input type="text" id="username" placeholder="Username (only alphabets, max 20)" maxlength="20">
+    <input type="password" id="password" placeholder="Password (alphabets & numbers only)">
+
     <button class="login-btn" onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
   </div>
 </div>
@@ -121,6 +84,7 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
       <button class="tab-btn" onclick="showPage('emergency')"><i class="fas fa-ambulance"></i> Emergency Contacts</button>
       <button class="tab-btn" onclick="showPage('history')"><i class="fas fa-history"></i> History</button>
     </div>
+
     <div class="controls">
       <input type="text" id="search" placeholder="🔍 Search contacts..." oninput="searchContacts()">
       <button id="voice-btn" onclick="toggleVoiceSearch()"><i class="fas fa-microphone"></i></button>
@@ -139,102 +103,7 @@ select#blood:focus {border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,23
     <div class="page-title"><h2>Favorites (<span id="fav-count">0</span>)</h2></div>
     <div class="contacts-grid" id="contacts-grid-fav"></div>
   </div>
-
-  <!-- GROUPS -->
-  <div id="page-groups" class="app-page">
-    <div class="page-title"><h2>Groups (<span id="group-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-groups"></div>
-  </div>
-
-  <!-- PRIVATE CONTACTS -->
-  <div id="page-private" class="app-page">
-    <div class="page-title"><h2>Private Contacts (<span id="private-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-private"></div>
-  </div>
-
-  <!-- BLOCKED CONTACTS -->
-  <div id="page-blocked" class="app-page">
-    <div class="page-title"><h2>Blocked Contacts (<span id="blocked-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-blocked"></div>
-  </div>
-
-  <!-- EMERGENCY CONTACTS -->
-  <div id="page-emergency" class="app-page">
-    <div class="page-title"><h2>Emergency Contacts (<span id="emergency-count">0</span>)</h2></div>
-    <div class="contacts-grid" id="contacts-grid-emergency"></div>
-  </div>
-
-  <!-- HISTORY -->
-  <div id="page-history" class="app-page">
-    <div class="page-title"><h2>Call / Message History (<span id="history-count">0</span>)</h2></div>
-    <div id="history-grid"></div>
-    <canvas id="chart" style="margin-top:1rem;"></canvas>
-  </div>
 </div>
-
-<!-- CONTACT MODAL -->
-<div id="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h2 id="modal-title">Add Contact</h2>
-    <form id="contact-form">
-      <input type="file" id="avatar" accept="image/*" onchange="previewAvatar()">
-      <div class="contact-avatar" id="avatar-preview">👤</div>
-      <input type="text" id="name" placeholder="Name *" required>
-      <input type="tel" id="phone" placeholder="Phone *">
-      <input type="email" id="email" placeholder="Email">
-      <input type="date" id="birthday" placeholder="Birthday">
-      <select id="blood" required>
-        <option value="" disabled selected>Select Blood Group</option>
-        <option value="A+">A+</option>
-        <option value="A-">A-</option>
-        <option value="B+">B+</option>
-        <option value="B-">B-</option>
-        <option value="AB+">AB+</option>
-        <option value="AB-">AB-</option>
-        <option value="O+">O+</option>
-        <option value="O-">O-</option>
-      </select>
-      <input type="text" id="group" placeholder="Group">
-      <textarea id="notes" placeholder="Notes"></textarea>
-      <label><input type="checkbox" id="emergency"> Emergency Contact 🚨</label>
-      <label><input type="checkbox" id="private"> Private 🔒</label>
-      <input type="hidden" id="latitude">
-      <input type="hidden" id="longitude">
-      <button type="button" onclick="getCurrentLocation()" class="login-btn" style="margin-bottom:1rem;background:#44a08d;">📍 Get Current Location</button>
-      <button type="submit" class="login-btn" style="margin-top:1rem;">Save Contact</button>
-    </form>
-  </div>
-</div>
-
-<!-- PRIVATE UNLOCK MODAL -->
-<div id="private-modal">
-  <div class="modal-content">
-    <span class="close" onclick="closePrivateModal()">&times;</span>
-    <h2>Enter PIN to View Private Contacts</h2>
-    <input type="password" id="private-pin" placeholder="Enter PIN">
-    <button class="login-btn" onclick="unlockPrivate()">Unlock 🔒</button>
-    <button class="login-btn" style="margin-top:10px;background:#ff6b6b;" onclick="changePrivatePin()">Change PIN ✏️</button>
-  </div>
-</div>
-
-<!-- MAP MODAL -->
-<div id="map-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;z-index:2000;">
-  <div style="width:90%;max-width:600px;height:80%;position:relative;">
-    <span class="close" onclick="closeMap()" style="position:absolute;top:10px;right:20px;font-size:2rem;color:white;cursor:pointer;">&times;</span>
-    <div id="map" style="width:100%;height:100%;border-radius:15px;"></div>
-  </div>
-</div>
-
-<!-- QR CODE MODAL -->
-<div id="qr-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;z-index:2000;">
-  <div style="width:300px;height:300px;position:relative;background:white;border-radius:15px;padding:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-    <span class="close" onclick="closeQR()" style="position:absolute;top:5px;right:10px;font-size:2rem;color:#333;cursor:pointer;">&times;</span>
-    <canvas id="qr-code"></canvas>
-    <p style="margin-top:10px;font-size:0.9rem;text-align:center;">Scan to get contact info</p>
-  </div>
-</div>
-
 <script>
 /* ========================== ORIGINAL SCRIPT ========================== */
 let contacts = [];
@@ -243,67 +112,64 @@ let privatePIN = "1234";
 let activePage = "all";
 
 /* ---------- SPLASH ---------- */
-function enterApp(){document.getElementById('splash').style.display='none';document.getElementById('login-page').style.display='flex';}
-
-/* ---------- LOGIN ---------- */
-function login(){
-  let username = document.getElementById('username').value;
-  let password = document.getElementById('password').value;
-  if(username && password){document.getElementById('login-page').style.display='none';document.getElementById('app').style.display='block';renderContacts();}
-  else alert('Enter credentials');
+function enterApp(){
+  document.getElementById('splash').style.display='none';
+  document.getElementById('login-page').style.display='flex';
 }
-
-/* ---------- MODAL ---------- */
-function openModal(type,id=null){
-  document.getElementById('modal').style.display='flex';
-  document.getElementById('modal-title').innerText = type==='add'?'Add Contact':'Edit Contact';
-  if(type==='edit' && id!==null){
-    let c = contacts.find(c=>c.id===id);
-    document.getElementById('name').value=c.name;
-    document.getElementById('phone').value=c.phone;
-    document.getElementById('email').value=c.email;
-    document.getElementById('blood').value=c.blood;
-    document.getElementById('group').value=c.group;
-    document.getElementById('notes').value=c.notes;
-    document.getElementById('latitude').value=c.latitude;
-    document.getElementById('longitude').value=c.longitude;
-  } else {document.getElementById('contact-form').reset();}
-}
-function closeModal(){document.getElementById('modal').style.display='none';}
 
 /* ---------- PRIVATE ---------- */
-function showPrivate(){document.getElementById('private-modal').style.display='flex';}
-function closePrivateModal(){document.getElementById('private-modal').style.display='none';}
+function showPrivate(){
+  document.getElementById('private-modal').style.display='flex';
+}
+function closePrivateModal(){
+  document.getElementById('private-modal').style.display='none';
+}
 function unlockPrivate(){
   let pin=document.getElementById('private-pin').value;
-  if(pin===privatePIN){document.getElementById('private-modal').style.display='none';showPage('private');}
-  else alert('Incorrect PIN');
+  if(pin===privatePIN){
+    document.getElementById('private-modal').style.display='none';
+    showPage('private');
+  } else alert('Incorrect PIN');
 }
-function changePrivatePin(){privatePIN=prompt("Enter new PIN:");alert("PIN changed successfully");}
+function changePrivatePin(){
+  privatePIN=prompt("Enter new PIN:");
+  alert("PIN changed successfully");
+}
 
 /* ---------- VOICE SEARCH ---------- */
 let recognition;
 function toggleVoiceSearch(){
   const btn=document.getElementById('voice-btn');
-  if(!('webkitSpeechRecognition' in window)){alert('Voice not supported');return;}
+  if(!('webkitSpeechRecognition' in window)){
+    alert('Voice not supported');
+    return;
+  }
   if(!recognition){
-    recognition = new webkitSpeechRecognition();
+    recognition=new webkitSpeechRecognition();
     recognition.continuous=false;
     recognition.lang='en-US';
-    recognition.interimResults=false;
-    recognition.onresult=(e)=>{document.getElementById('search').value=e.results[0][0].transcript;searchContacts();}
+    recognition.onresult=(e)=>{
+      document.getElementById('search').value=e.results[0][0].transcript;
+      searchContacts();
+    };
   }
   btn.classList.toggle('active');
-  if(btn.classList.contains('active')) recognition.start(); else recognition.stop();
+  btn.classList.contains('active') ? recognition.start() : recognition.stop();
 }
 
 /* ---------- CONTACTS ---------- */
 function renderContacts(){
-  const allGrid=document.getElementById('contacts-grid-all');allGrid.innerHTML='';
-  const favGrid=document.getElementById('contacts-grid-fav');favGrid.innerHTML='';
-  const privateGrid=document.getElementById('contacts-grid-private');privateGrid.innerHTML='';
+  const allGrid=document.getElementById('contacts-grid-all');
+  const favGrid=document.getElementById('contacts-grid-fav');
+  const privateGrid=document.getElementById('contacts-grid-private');
+
+  allGrid.innerHTML='';
+  favGrid.innerHTML='';
+  privateGrid.innerHTML='';
+
   contacts.forEach(c=>{
-    const card=document.createElement('div');card.className='contact-card';
+    const card=document.createElement('div');
+    card.className='contact-card';
     card.innerHTML=`
       <div class="contact-avatar">${c.name[0]}</div>
       <div class="contact-name">${c.name}</div>
@@ -318,7 +184,8 @@ function renderContacts(){
         <button class="action-btn delete-btn" onclick="deleteContact(${c.id})"><i class="fas fa-trash"></i></button>
         <button class="action-btn location-btn" onclick="showLocation(${c.id})"><i class="fas fa-map-marker-alt"></i></button>
         <button class="action-btn" onclick="shareContact(${c.id})"><i class="fas fa-qrcode"></i></button>
-      </div>`;
+      </div>
+    `;
     allGrid.appendChild(card);
     if(c.favorite) favGrid.appendChild(card.cloneNode(true));
     if(c.private) privateGrid.appendChild(card.cloneNode(true));
@@ -342,187 +209,89 @@ function searchContacts(){
   });
 }
 
-/* ---------- CALL / MESSAGE (FIXED) ---------- */
+/* ---------- CALL / MESSAGE ---------- */
 function callContact(phone){
-  history.push({
-    type: 'Call',
-    phone: phone,
-    time: new Date().toLocaleString()
-  });
+  history.push({type:'Call',phone,time:new Date().toLocaleString()});
   updateHistory();
-  window.location.href = `tel:${phone}`;
+  window.location.href=`tel:${phone}`;
 }
-
 function msgContact(phone){
-  history.push({
-    type: 'Message',
-    phone: phone,
-    time: new Date().toLocaleString()
-  });
+  history.push({type:'Message',phone,time:new Date().toLocaleString()});
   updateHistory();
-  window.location.href = `sms:${phone}`;
+  window.location.href=`sms:${phone}`;
 }
 
-/* ---------- HISTORY UPDATE ---------- */
+/* ---------- HISTORY ---------- */
 function updateHistory(){
-  const grid = document.getElementById('history-grid');
-  grid.innerHTML = '';
+  const grid=document.getElementById('history-grid');
+  grid.innerHTML='';
   history.slice().reverse().forEach(h=>{
-    const div = document.createElement('div');
-    div.className = 'history-card';
-    div.innerHTML = `<b>${h.type}</b> → ${h.phone}<br><small>${h.time}</small>`;
+    const div=document.createElement('div');
+    div.className='history-card';
+    div.innerHTML=`<b>${h.type}</b> → ${h.phone}<br><small>${h.time}</small>`;
     grid.appendChild(div);
   });
-  document.getElementById('history-count').innerText = history.length;
+  document.getElementById('history-count').innerText=history.length;
 }
-
 
 /* ---------- LOCATION ---------- */
 function getCurrentLocation(){
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(pos=>{
-      document.getElementById('latitude').value=pos.coords.latitude;
-      document.getElementById('longitude').value=pos.coords.longitude;
-      alert('Location captured successfully!');
-    },()=>alert('Permission denied'));
-  } else alert('Geolocation not supported');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    document.getElementById('latitude').value=pos.coords.latitude;
+    document.getElementById('longitude').value=pos.coords.longitude;
+    alert('Location captured');
+  });
 }
 function showLocation(id){
-  const c = contacts.find(c=>c.id===id);
+  const c=contacts.find(c=>c.id===id);
   document.getElementById('map-modal').style.display='flex';
-  document.getElementById('map').innerHTML=`<iframe src="https://maps.google.com/maps?q=${c.latitude},${c.longitude}&z=15&output=embed" style="width:100%;height:100%;border:none;border-radius:15px;"></iframe>`;
+  document.getElementById('map').innerHTML=
+    `<iframe src="https://maps.google.com/maps?q=${c.latitude},${c.longitude}&z=15&output=embed"
+     style="width:100%;height:100%;border:none;"></iframe>`;
 }
-function closeMap(){document.getElementById('map-modal').style.display='none';}
+function closeMap(){
+  document.getElementById('map-modal').style.display='none';
+}
 
 /* ---------- QR CODE ---------- */
 function shareContact(id){
-  const c = contacts.find(c=>c.id===id);
-  const contactData = `Name: ${c.name}\nPhone: ${c.phone}\nEmail: ${c.email}\nBlood Group: ${c.blood}\nGroup: ${c.group}\nNotes: ${c.notes}`;
-  const qr = new QRious({element: document.getElementById('qr-code'),value:contactData,size:250});
+  const c=contacts.find(c=>c.id===id);
+  new QRious({
+    element:document.getElementById('qr-code'),
+    value:`Name:${c.name}\nPhone:${c.phone}\nEmail:${c.email}`,
+    size:250
+  });
   document.getElementById('qr-modal').style.display='flex';
 }
-function closeQR(){document.getElementById('qr-modal').style.display='none';}
+function closeQR(){
+  document.getElementById('qr-modal').style.display='none';
+}
 
-/* ---------- CONTACT FORM ---------- */
+/* ---------- FORM ---------- */
 document.getElementById('contact-form').addEventListener('submit',function(e){
   e.preventDefault();
-  let id = Date.now();
-  let c={id:id,
-         name:document.getElementById('name').value,
-         phone:document.getElementById('phone').value,
-         email:document.getElementById('email').value,
-         blood:document.getElementById('blood').value,
-         group:document.getElementById('group').value,
-         notes:document.getElementById('notes').value,
-         latitude:document.getElementById('latitude').value,
-         longitude:document.getElementById('longitude').value,
-         favorite:false,
-         private:document.getElementById('private').checked,
-         emergency:document.getElementById('emergency').checked};
-  contacts.push(c);closeModal();renderContacts();
+  contacts.push({
+    id:Date.now(),
+    name:name.value,
+    phone:phone.value,
+    email:email.value,
+    blood:blood.value,
+    group:group.value,
+    notes:notes.value,
+    latitude:latitude.value,
+    longitude:longitude.value,
+    favorite:false,
+    private:document.getElementById('private').checked,
+    emergency:document.getElementById('emergency').checked
+  });
+  closeModal();
+  renderContacts();
 });
 
-function deleteContact(id){contacts=contacts.filter(c=>c.id!==id);renderContacts();}
-
-function previewAvatar(){
-  const file=document.getElementById('avatar').files[0];
-  if(file){
-    const reader=new FileReader();
-    reader.onload=e=>document.getElementById('avatar-preview').innerHTML=`<img src="${e.target.result}" style="width:60px;height:60px;border-radius:50%">`;
-    reader.readAsDataURL(file);
-  }
+function deleteContact(id){
+  contacts=contacts.filter(c=>c.id!==id);
+  renderContacts();
 }
-
-/* ========================== VIDEO & GROUP CALL ========================== */
-let localStream;
-let videoCallModal;
-function startVideoCall(phone) {
-    alert('Starting video call with ' + phone);
-    
-    if (!videoCallModal) {
-        videoCallModal = document.createElement('div');
-        videoCallModal.id = 'video-call-modal';
-        videoCallModal.style.cssText = `
-            position:fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.9); display:flex; justify-content:center; align-items:center;
-            z-index:3000; flex-direction:column;
-        `;
-        videoCallModal.innerHTML = `
-            <span onclick="closeVideoCall()" style="position:absolute;top:10px;right:20px;font-size:2rem;color:white;cursor:pointer;">&times;</span>
-            <video id="local-video" autoplay muted style="width:45%;margin:10px;background:#333;border-radius:10px;"></video>
-            <video id="remote-video" autoplay style="width:45%;margin:10px;background:#333;border-radius:10px;"></video>
-        `;
-        document.body.appendChild(videoCallModal);
-    }
-
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(stream => {
-            localStream = stream;
-            document.getElementById('local-video').srcObject = stream;
-        })
-        .catch(err => alert('Camera/Microphone access denied: ' + err));
-}
-
-function closeVideoCall() {
-    if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-        localStream = null;
-    }
-    if (videoCallModal) {
-        videoCallModal.remove();
-        videoCallModal = null;
-    }
-}
-
-function startGroupCall() {
-    alert('Starting group video call with all contacts in this group!');
-    
-    if (!videoCallModal) {
-        videoCallModal = document.createElement('div');
-        videoCallModal.id = 'video-call-modal';
-        videoCallModal.style.cssText = `
-            position:fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.9); display:flex; justify-content:center; align-items:center;
-            z-index:3000; flex-wrap:wrap; overflow-y:auto; padding:20px;
-        `;
-        videoCallModal.innerHTML = `<span onclick="closeVideoCall()" style="position:absolute;top:10px;right:20px;font-size:2rem;color:white;cursor:pointer;">&times;</span>`;
-        document.body.appendChild(videoCallModal);
-    }
-
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(stream => {
-            localStream = stream;
-            const localVideo = document.createElement('video');
-            localVideo.srcObject = stream;
-            localVideo.autoplay = true;
-            localVideo.muted = true;
-            localVideo.style.cssText = "width:30%;margin:10px;background:#333;border-radius:10px;";
-            videoCallModal.appendChild(localVideo);
-        })
-        .catch(err => alert('Camera/Microphone access denied: ' + err));
-}
-
-function addVideoButtons() {
-    document.querySelectorAll('.contact-card').forEach(card => {
-        if (!card.querySelector('.video-btn')) {
-            const phone = card.querySelector('.contact-phone').innerText;
-            const btn = document.createElement('button');
-            btn.className = 'action-btn video-btn';
-            btn.style.background = '#764ba2';
-            btn.style.color = 'white';
-            btn.innerHTML = '<i class="fas fa-video"></i>';
-            btn.title = 'Video Call';
-            btn.onclick = () => startVideoCall(phone);
-            card.querySelector('.contact-actions').appendChild(btn);
-        }
-    });
-}
-
-const observer = new MutationObserver(addVideoButtons);
-observer.observe(document.getElementById('contacts-grid-all'), { childList: true, subtree: true });
-observer.observe(document.getElementById('contacts-grid-fav'), { childList: true, subtree: true });
-observer.observe(document.getElementById('contacts-grid-private'), { childList: true, subtree: true });
-observer.observe(document.getElementById('contacts-grid-groups'), { childList: true, subtree: true });
 </script>
 </body>
 </html>
