@@ -298,45 +298,32 @@ function toggleVoiceSearch(){
 }
 
 /* ---------- CONTACTS ---------- */
-card.innerHTML = `
-  <button class="fav-btn ${c.favorite ? 'active' : ''}" onclick="toggleFavorite(${c.id})">
-    <i class="fas fa-heart"></i>
-  </button>
-
-  <div class="contact-avatar">${c.name[0]}</div>
-  <div class="contact-name">${c.name}</div>
-  <div class="contact-phone">${c.phone}</div>
-  <div class="contact-email">${c.email}</div>
-  <div class="contact-blood">${c.blood}</div>
-  <div class="contact-group">${c.group}</div>
-
-  <div class="contact-actions">
-    <button class="action-btn call-btn" onclick="callContact('${c.phone}')">
-      <i class="fas fa-phone"></i>
-    </button>
-
-    <button class="action-btn msg-btn" onclick="msgContact('${c.phone}')">
-      <i class="fas fa-comment"></i>
-    </button>
-
-    <button class="action-btn edit-btn" onclick="openModal('edit',${c.id})">
-      <i class="fas fa-edit"></i>
-    </button>
-
-    <button class="action-btn delete-btn" onclick="deleteContact(${c.id})">
-      <i class="fas fa-trash"></i>
-    </button>
-
-    <button class="action-btn location-btn" onclick="showLocation(${c.id})">
-      <i class="fas fa-map-marker-alt"></i>
-    </button>
-
-    <button class="action-btn block-btn" onclick="toggleBlock(${c.id})">
-      <i class="fas fa-ban"></i>
-    </button>
-  </div>
-`;
- 
+function renderContacts(){
+  const allGrid=document.getElementById('contacts-grid-all');allGrid.innerHTML='';
+  const favGrid=document.getElementById('contacts-grid-fav');favGrid.innerHTML='';
+  const privateGrid=document.getElementById('contacts-grid-private');privateGrid.innerHTML='';
+  contacts.forEach(c=>{
+    const card=document.createElement('div');card.className='contact-card';
+    card.innerHTML=`
+      <div class="contact-avatar">${c.name[0]}</div>
+      <div class="contact-name">${c.name}</div>
+      <div class="contact-phone">${c.phone}</div>
+      <div class="contact-email">${c.email}</div>
+      <div class="contact-blood">${c.blood}</div>
+      <div class="contact-group">${c.group}</div>
+      <div class="contact-actions">
+        <button class="action-btn call-btn" onclick="callContact('${c.phone}')"><i class="fas fa-phone"></i></button>
+        <button class="action-btn msg-btn" onclick="msgContact('${c.phone}')"><i class="fas fa-comment"></i></button>
+        <button class="action-btn edit-btn" onclick="openModal('edit',${c.id})"><i class="fas fa-edit"></i></button>
+        <button class="action-btn delete-btn" onclick="deleteContact(${c.id})"><i class="fas fa-trash"></i></button>
+        <button class="action-btn location-btn" onclick="showLocation(${c.id})"><i class="fas fa-map-marker-alt"></i></button>
+        <button class="action-btn" onclick="shareContact(${c.id})"><i class="fas fa-qrcode"></i></button>
+      </div>`;
+    allGrid.appendChild(card);
+    if(c.favorite) favGrid.appendChild(card.cloneNode(true));
+    if(c.private) privateGrid.appendChild(card.cloneNode(true));
+  });
+}
 
 /* ---------- PAGE SWITCH ---------- */
 function showPage(page){
@@ -530,18 +517,6 @@ function addVideoButtons() {
         }
     });
 }
-function toggleFavorite(id) {
-  const contact = contacts.find(c => c.id === id);
-  contact.favorite = !contact.favorite;
-  renderContacts();
-}
-function toggleBlock(id) {
-  const contact = contacts.find(c => c.id === id);
-  contact.blocked = !contact.blocked;
-  renderContacts();
-}
-
-
 
 const observer = new MutationObserver(addVideoButtons);
 observer.observe(document.getElementById('contacts-grid-all'), { childList: true, subtree: true });
